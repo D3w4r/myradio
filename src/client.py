@@ -1,51 +1,34 @@
+import logging
 import os
+import time
+import venv
 from json.decoder import JSONDecodeError
 
 import spotipy
-import spotipy.util as util
+import vlc
+from mutagen.wave import WAVE
+
+from spotipy.oauth2 import SpotifyOAuth
 
 
 class Client:
 
     def __init__(self,
                  username,
-                 scope='user-read-private user-read-playback-state user-modify-playback-state',
-                 redirect_uri='http://localhost:8080/'
+                 scope='user-read-private user-read-playback-state user-modify-playback-state'
                  ):
         self.username = username
-        self.scope = scope
-        self.redirect_uri = redirect_uri
-        # THESE ARE NOT TO BE MODIFIED NOR TO BE REVEALED TO ANYONE #
-        self.client_id = '62faefbbb3f84ccf8a2c8626a3f2f89e'
-        self.client_secret = 'cfd44c47314f4d6795d32ab78d78297f'
-        # THESE ARE NOT TO BE MODIFIED NOR TO BE REVEALED TO ANYONE #
-
-        try:
-            print('Accessing API with user token')
-            print()
-            token = util.prompt_for_user_token(
-                self.username,
-                self.scope,
-                self.client_id,
-                self.client_secret,
-                self.redirect_uri
-            )
-        except (AttributeError, JSONDecodeError):
-            os.remove(f'.cache-{username}')
-            token = util.prompt_for_user_token(
-                self.username,
-                self.scope,
-                self.client_id,
-                self.client_secret,
-                self.redirect_uri
-            )
-        self.spotifyObject = spotipy.Spotify(auth=token)
+        self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        self.audio_info = {
+            "file": r"D:\Data\ProjectLaboratory\myradio\src\weather.wav",
+            "length": WAVE(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav").info.length
+        }
 
     def getActiveDevices(self):
         print('ACTIVE DEVICES:')
         devices = self.spotifyObject.devices()
         for device in devices['devices']:
-            print('name: ' + device['name'] + ' id: ' + device['id'])
+            print('name: ' + device['name'])
         return devices
 
     def setPrimaryDeviceId(self, devices, idx):
@@ -54,11 +37,11 @@ class Client:
     def getPrimaryDeviceId(self):
         return self.device
 
-    def getCurrentTrack(self):
+    def getCurrentTrack(self, verbose=None):
         track = self.spotifyObject.current_user_playing_track()
         if track is None:
             print('No track is playing')
-        else:
+        elif verbose == 'v':
             print(f"Current playing track: -- {track['item']['name']} by {track['item']['artists'][0]['name']}")
         return track
 
@@ -106,11 +89,20 @@ class Client:
     def search(self, query, limit, offset, searchType='track'):
         return self.spotifyObject.search(query, limit, offset, searchType)
 
-    def start_playback(self, context_uri, uris):
-        self.spotifyObject.start_playback(self.device, context_uri, uris)
+    def start_playback(self, context_uri, uris, progress_ms=None):
+        self.spotifyObject.start_playback(device_id=self.device, context_uri=context_uri, uris=uris, offset=None,
+                                          position_ms=progress_ms)
 
     def selectSong(self, from_tracks):
         selection = input("Enter a song number to see the album art: ")
         if selection == 'x':
             return None
         return from_tracks[int(selection)]
+
+    def simulate_speech(self):
+        print(f"Audio length: {round(self.audio_info['length'])}")
+        vlc.MediaPlayer(self.audio_info['file']).play()
+        time.sleep(self.audio_info['length'])
+
+    def pause_playback(self):
+        self.spotifyObject.pause_playback(self.device)
