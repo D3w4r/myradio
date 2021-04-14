@@ -39,7 +39,7 @@ class Weather:
         logging.info('Creating sentence for TTS interface...')
         text = "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
             data["current"]["feels_like"]) + " degrees outside. Expect " + str(
-            data["current"]["weather"][0]["main"]) + " weather. Wind speed is " + str(
+            data["current"]["weather"][0]["main"]) + ". Wind speed is " + str(
             data["current"]["wind_speed"]) + " kilometers an hour."
         return text
 
