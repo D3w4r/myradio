@@ -37,7 +37,7 @@ class Client:
         if track is None:
             print('No track is playing')
         elif verbose == 'v':
-            print(f"Current playing track: -- {track['item']['name']} by {track['item']['artists'][0]['name']}")
+            print(f"Currently playing track: -- {track['item']['name']} by {track['item']['artists'][0]['name']}")
         return track
 
     def getArtistOfTrack(self, track):
@@ -89,7 +89,7 @@ class Client:
                                           position_ms=progress_ms)
 
     def selectSong(self, from_tracks):
-        selection = input("Enter a song number to see the album art: ")
+        selection = input("Enter a song number: ")
         if selection == 'x':
             return None
         return from_tracks[int(selection)]

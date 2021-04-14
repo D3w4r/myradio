@@ -28,8 +28,8 @@ class Weather:
     def getWeatherInfo(self):
         print('Getting weather info...')
         location = self.getLocation()
-        url = "https://api.openweathermap.org/data/2.5/onecall?lat=%s&lon=%s&appid=%s&units=metric" % (
-            location[0], location[1], self.api_key)
+        url = "https://api.openweathermap.org/data/2.5/onecall?lat=%s&lon=%s&appid=%s&units=metric&lang=%s" % (
+            location[0], location[1], self.api_key, "hu")
 
         response = requests.get(url)
         return json.loads(response.text)
@@ -39,11 +39,14 @@ class Weather:
         print('Creating sentence for TTS interface...')
         if language == 'en-EN':
             text = "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
-                data["current"]["feels_like"]) + " degrees outside. Expect " + str(
-                data["current"]["weather"][0]["main"]) + ". Wind speed is " + str(
+                data["current"]["feels_like"]) + " degrees outside. The description of the weather is " + str(
+                data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
                 data["current"]["wind_speed"]) + " kilometers an hour."
         if language == 'hu-HU':
-            text = "Ez most egy magyar mondat"
+            text = "Jelenleg " + str(data["current"]["temp"]) + "fok van, ami " + str(
+                data["current"]["feels_like"]) + " foknak érződik. Az időjárás leírása: " + str(
+                data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
+                data["current"]["wind_speed"]) + " kilóméter per óra."
         return text
 
     def synthesise(self, path, language, voice):
