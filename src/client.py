@@ -34,7 +34,7 @@ class Client:
     def get_primary_device(self):
         return self.device
 
-    def getCurrentTrack(self, verbose=None):
+    def current_track(self, verbose=None):
         track = self.spotifyObject.current_user_playing_track()
         if track is None:
             print('No track is playing')
