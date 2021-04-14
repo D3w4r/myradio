@@ -4,10 +4,17 @@ from myradio.src import weather
 from myradio.src.client import Client
 
 
-def print_artist_info(artist):
-    print(artist['name'])
-    print(str(artist['followers']['total']) + " followers")
-    print(artist['genres'][0])
+def info(subject):
+    print(subject['name'])
+    print(str(subject['followers']['total']) + " followers")
+    print(subject['genres'][0])
+    print()
+
+
+def loopMsg():
+    print()
+    print("0 - Search for an artist")
+    print("1 - exit")
     print()
 
 
@@ -18,17 +25,17 @@ username = 'dewarhun'
 client = Client(username)
 
 # Devices
-devices = client.getActiveDevices()
+devices = client.active_devices()
 # Set primary device
-client.setPrimaryDeviceId(devices, 0)
+client.set_primary_device(devices, 0)
 # Current track information
 current_track = client.getCurrentTrack('v')
-artist = client.getArtistOfTrack(current_track)
+artist = client.get_artist(current_track)
 print(artist)
 # User info
-user = client.getUserInfo()
-name = client.getUserName(user)
-
+user = client.user()
+name = user['display_name']
+followers = user['followers']['total']
 print(f'Username: {name}')
 print(f'Followers: {client.getFollowersNum(user)}')
 
@@ -36,7 +43,7 @@ print(f'Followers: {client.getFollowersNum(user)}')
 
 while True:
 
-    client.loopMsg()
+    loopMsg()
 
     choice = input("Enter your choice: ")
 
@@ -49,15 +56,15 @@ while True:
         # Print artist details
         artist = searchResults['artists']['items'][0]
 
-        print_artist_info(artist)
+        info(artist)
 
         artist_id = artist['id']
 
-        all_tracks = client.getTracksOfArtist(artist_id)
+        all_tracks = client.get_tracks_by_artist(artist_id)
 
         selected = []
         while True:
-            selected.append(client.selectSong(all_tracks))
+            selected.append(client.select_song(all_tracks))
             if selected is None:
                 break
             else:
