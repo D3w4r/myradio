@@ -29,7 +29,7 @@ devices = client.active_devices()
 # Set primary device
 client.set_primary_device(devices, 0)
 # Current track information
-current_track = client.getCurrentTrack('v')
+current_track = client.current_track('v')
 artist = client.get_artist(current_track)
 print(artist)
 # User info
@@ -73,7 +73,7 @@ while True:
                 # Wait 10 seconds
                 time.sleep(10)
                 # Get info about the current track
-                current_track = client.getCurrentTrack()
+                current_track = client.current_track()
                 progress_ms = current_track['progress_ms']
                 name = current_track['item']['name']
                 # Stop playback
