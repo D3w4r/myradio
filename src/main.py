@@ -12,7 +12,7 @@ def print_artist_info(artist):
 
 
 weatherApp = weather.Weather('Budapest')
-weatherApp.synthesise(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav")
+weatherApp.synthesise(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav", 'hu-HU', 'hu-HU-NoemiNeural')
 
 username = 'dewarhun'
 client = Client(username)

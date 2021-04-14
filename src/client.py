@@ -1,13 +1,8 @@
-import logging
-import os
 import time
-import venv
-from json.decoder import JSONDecodeError
 
 import spotipy
 import vlc
 from mutagen.wave import WAVE
-
 from spotipy.oauth2 import SpotifyOAuth
 
 
@@ -100,7 +95,7 @@ class Client:
         return from_tracks[int(selection)]
 
     def simulate_speech(self):
-        print(f"Audio length: {round(self.audio_info['length'])}")
+        print(f"Audio length: {round(self.audio_info['length'])} seconds.")
         vlc.MediaPlayer(self.audio_info['file']).play()
         time.sleep(self.audio_info['length'])
 
