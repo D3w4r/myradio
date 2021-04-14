@@ -1,13 +1,8 @@
-import logging
-import os
 import time
-import venv
-from json.decoder import JSONDecodeError
 
 import spotipy
 import vlc
 from mutagen.wave import WAVE
-
 from spotipy.oauth2 import SpotifyOAuth
 
 
@@ -42,7 +37,7 @@ class Client:
         if track is None:
             print('No track is playing')
         elif verbose == 'v':
-            print(f"Current playing track: -- {track['item']['name']} by {track['item']['artists'][0]['name']}")
+            print(f"Currently playing track: -- {track['item']['name']} by {track['item']['artists'][0]['name']}")
         return track
 
     def getArtistOfTrack(self, track):
@@ -94,13 +89,13 @@ class Client:
                                           position_ms=progress_ms)
 
     def selectSong(self, from_tracks):
-        selection = input("Enter a song number to see the album art: ")
+        selection = input("Enter a song number: ")
         if selection == 'x':
             return None
         return from_tracks[int(selection)]
 
     def simulate_speech(self):
-        print(f"Audio length: {round(self.audio_info['length'])}")
+        print(f"Audio length: {round(self.audio_info['length'])} seconds.")
         vlc.MediaPlayer(self.audio_info['file']).play()
         time.sleep(self.audio_info['length'])
 

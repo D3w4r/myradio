@@ -1,10 +1,10 @@
 import json
-import logging
 import os
 
 import requests
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
+
 from geopy.geocoders import Nominatim
 
 
@@ -21,30 +21,38 @@ class Weather:
         return self.city
 
     def getLocation(self):
-        logging.info(f'Getting coordinates for {self.city}')
+        print(f'Getting coordinates for {self.city}')
         geolocator = Nominatim(user_agent='weatherapp')
         return geolocator.geocode(self.city).latitude, geolocator.geocode(self.city).longitude
 
     def getWeatherInfo(self):
-
+        print('Getting weather info...')
         location = self.getLocation()
-        url = "https://api.openweathermap.org/data/2.5/onecall?lat=%s&lon=%s&appid=%s&units=metric" % (
-            location[0], location[1], self.api_key)
+        url = "https://api.openweathermap.org/data/2.5/onecall?lat=%s&lon=%s&appid=%s&units=metric&lang=%s" % (
+            location[0], location[1], self.api_key, "hu")
 
         response = requests.get(url)
         return json.loads(response.text)
 
-    def getCurrentWeatherText(self):
+    def getCurrentWeatherText(self, language="en-EN"):
         data = self.getWeatherInfo()
-        logging.info('Creating sentence for TTS interface...')
-        text = "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
-            data["current"]["feels_like"]) + " degrees outside. Expect " + str(
-            data["current"]["weather"][0]["main"]) + " weather. Wind speed is " + str(
-            data["current"]["wind_speed"]) + " kilometers an hour."
+        print('Creating sentence for TTS interface...')
+        if language == 'en-EN':
+            text = "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
+                data["current"]["feels_like"]) + " degrees outside. The description of the weather is " + str(
+                data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
+                data["current"]["wind_speed"]) + " kilometers an hour."
+        if language == 'hu-HU':
+            text = "Jelenleg " + str(data["current"]["temp"]) + "fok van, ami " + str(
+                data["current"]["feels_like"]) + " foknak érződik. Az időjárás leírása: " + str(
+                data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
+                data["current"]["wind_speed"]) + " kilóméter per óra."
         return text
 
-    def synthesise(self, path):
-        logging.info('Synthesising speech')
+    def synthesise(self, path, language, voice):
+        print('Synthesising speech...')
         audio_config = AudioOutputConfig(filename=path)
+        self.speech_config.speech_synthesis_language = language
+        self.speech_config.speech_synthesis_voice_name = voice
         synthesizer = SpeechSynthesizer(speech_config=self.speech_config, audio_config=audio_config)
-        synthesizer.speak_text_async(self.getCurrentWeatherText())
+        synthesizer.speak_text_async(self.getCurrentWeatherText(language))
