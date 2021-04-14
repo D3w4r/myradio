@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 import requests
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
@@ -10,8 +11,8 @@ from geopy.geocoders import Nominatim
 class Weather:
     """This class manages weather info through the OpenWeatherMap API"""
 
-    api_key = 'fccb3b5153cacfb74847f4c9fd8ec730'
-    speech_config = SpeechConfig(subscription='792a41e8595a4992a02a06c58db64d0f', region='westeurope')
+    api_key = os.environ.get('OPENWEATHERMAP_ID')
+    speech_config = SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope')
 
     def __init__(self, city):
         self.city = city
