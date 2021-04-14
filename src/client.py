@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import venv
@@ -17,7 +18,6 @@ class Client:
                  scope='user-read-private user-read-playback-state user-modify-playback-state'
                  ):
         self.username = username
-        print('Accessing API with user token')
         self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
         self.audio_info = {
             "file": r"D:\Data\ProjectLaboratory\myradio\src\weather.wav",
