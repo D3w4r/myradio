@@ -19,17 +19,19 @@ class Client:
             "length": WAVE(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav").info.length
         }
 
-    def getActiveDevices(self):
+    def active_devices(self):
         print('ACTIVE DEVICES:')
         devices = self.spotifyObject.devices()
         for device in devices['devices']:
             print('name: ' + device['name'])
         return devices
 
-    def setPrimaryDeviceId(self, devices, idx):
+    def set_primary_device(self, devices, idx):
+        """"Set the primary device id"""
+
         self.device = devices['devices'][idx]['id']
 
-    def getPrimaryDeviceId(self):
+    def get_primary_device(self):
         return self.device
 
     def getCurrentTrack(self, verbose=None):
@@ -40,10 +42,10 @@ class Client:
             print(f"Currently playing track: -- {track['item']['name']} by {track['item']['artists'][0]['name']}")
         return track
 
-    def getArtistOfTrack(self, track):
+    def get_artist(self, track):
         return track['item']['artists'][0]['name']
 
-    def getTracksOfArtist(self, artist_id):
+    def get_tracks_by_artist(self, artist_id):
         trackURIs = []
         idx = 0
 
@@ -65,21 +67,9 @@ class Client:
 
         return trackURIs
 
-    def getUserInfo(self):
+    def user(self):
         user = self.spotifyObject.current_user()
         return user
-
-    def getUserName(self, user):
-        return user['display_name']
-
-    def getFollowersNum(self, user):
-        return user['followers']['total']
-
-    def loopMsg(self):
-        print()
-        print("0 - Search for an artist")
-        print("1 - exit")
-        print()
 
     def search(self, query, limit, offset, searchType='track'):
         return self.spotifyObject.search(query, limit, offset, searchType)
@@ -88,7 +78,7 @@ class Client:
         self.spotifyObject.start_playback(device_id=self.device, context_uri=context_uri, uris=uris, offset=None,
                                           position_ms=progress_ms)
 
-    def selectSong(self, from_tracks):
+    def select_song(self, from_tracks):
         selection = input("Enter a song number: ")
         if selection == 'x':
             return None
