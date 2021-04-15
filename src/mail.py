@@ -1,6 +1,7 @@
 import base64
 import os
 import pickle
+from pprint import pprint
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -38,6 +39,8 @@ class Gmail:
         # Messages is a list of dicts, where each dict contains a message ID
         messages = result.get('messages')
 
+        ret = []
+
         # Iterate over it
         for msg in messages:
             txt = service.users().messages().get(userId='me', id=msg['id']).execute()
@@ -54,24 +57,19 @@ class Gmail:
                     if d['name'] == 'From':
                         sender = str(d['value'])
                         sender = sender.replace('\"', "").split(" ")[0]
-
-                # The Body of the message is in Encrypted format. So, we have to decode it.
-                # Get the data and decode it with base 64 decoder.
-                # pprint(payload.get('parts'))
-                body = payload.get('body')
-                data = str(body.get('data'))
-                data = data.replace("-", "+").replace("_", "/")
-                decoded_data = base64.b64decode(data)
-
-                # Printing the subject, sender's email and message
-                print("Subject: ", subject)
-                print("From: ", sender)
-                print('\n')
-
             except:
                 raise Exception("Error whilst getting messages!")
+
+            ret.append(
+                {
+                    "subject": subject,
+                    "sender": sender
+                }
+            )
+        return ret
 
 
 if __name__ == "__main__":
     gmail = Gmail()
-    gmail.get_emails()
+    for item in gmail.get_emails():
+        pprint(item)
