@@ -1,4 +1,5 @@
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
+from rss import Feed
 
 
 class Speech:
@@ -30,8 +31,12 @@ class Speech:
                 data["current"]["wind_speed"]) + " kilóméter per óra."
             return text
 
-    def generate_text_news(self, data):
-        pass
+    def generate_text_news_top(self, url):
+        feed = Feed(url)
+        data = feed.top_five_entries()
+        text = "A jelenlegi hírek a következőek: " + data[0] + ". " + data[1] + ". " + data[2] + ". " + data[3] + ". " + \
+               data[4] + "."
+        return text
 
     def generate_text_breaking(self, data):
         pass
@@ -39,6 +44,7 @@ class Speech:
     def generate_text_email(self, data):
         pass
 
-    def synthesize(self, text):
+    def synthesize(self, text: list):
         print('Synthesising speech...')
-        self.speech_synthesizer.speak_text(text)
+        for item in text:
+            self.speech_synthesizer.speak_text(item)
