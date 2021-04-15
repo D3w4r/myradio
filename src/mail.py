@@ -1,4 +1,3 @@
-import base64
 import os
 import pickle
 from pprint import pprint
@@ -25,7 +24,7 @@ class Gmail:
                 self.flow = InstalledAppFlow.from_client_secrets_file('auth/credentials.json', self.SCOPES)
                 self.credentials = self.flow.run_local_server(port=8080)
 
-            # Save acces token
+            # Save access token
             with open('auth/token.pickle', 'wb') as token:
                 pickle.dump(self.credentials, token)
 
@@ -34,7 +33,7 @@ class Gmail:
         service = build('gmail', 'v1', credentials=self.credentials)
 
         # Request a list of all messages
-        result = service.users().messages().list(maxResults=5, userId='me').execute()
+        result = service.users().messages().list(maxResults=10, userId='me').execute()
 
         # Messages is a list of dicts, where each dict contains a message ID
         messages = result.get('messages')
@@ -45,27 +44,30 @@ class Gmail:
         for msg in messages:
             txt = service.users().messages().get(userId='me', id=msg['id']).execute()
 
-            try:
-                # Get value of 'payload' from dictionary 'txt'
-                payload = txt['payload']
-                headers = payload['headers']
+            label = txt['labelIds']
 
-                # Look for Subject and Sender Email in the headers
-                for d in headers:
-                    if d['name'] == 'Subject':
-                        subject = d['value']
-                    if d['name'] == 'From':
-                        sender = str(d['value'])
-                        sender = sender.replace('\"', "").split(" ")[0]
-            except:
-                raise Exception("Error whilst getting messages!")
+            if 'UNREAD' in label and 'CATEGORY_SOCIAL' not in label and 'CATEGORY_PROMOTIONS':
+                try:
+                    # Get value of 'payload' from dictionary 'txt'
+                    payload = txt['payload']
+                    headers = payload['headers']
 
-            ret.append(
-                {
-                    "subject": subject,
-                    "sender": sender
-                }
-            )
+                    # Look for Subject and Sender Email in the headers
+                    for d in headers:
+                        if d['name'] == 'Subject':
+                            subject = d['value']
+                        if d['name'] == 'From':
+                            sender = str(d['value'])
+                            sender = sender.replace('\"', "").split('<')[0]
+                except:
+                    raise Exception("Error whilst getting messages!")
+
+                ret.append(
+                    {
+                        "subject": subject,
+                        "sender": sender
+                    }
+                )
         return ret
 
 

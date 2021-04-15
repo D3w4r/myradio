@@ -2,6 +2,8 @@ import os
 from datetime import datetime, date
 
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
+
+from myradio.src.mail import Gmail
 from rss import Feed
 
 
@@ -52,8 +54,16 @@ class Speech:
     def generate_text_breaking(self, data):
         pass
 
-    def generate_text_email(self, data):
-        pass
+    def generate_text_email(self, data: list):
+        print("Generating text from incoming emails")
+        text = [
+            "A következő üzenetei érkeztek. "
+        ]
+        for item in data:
+            text.append(
+                "Feladó: " + item['sender'] + ", téma: " + item['subject'] + "."
+            )
+        return text
 
     def synthesize(self, text: list):
         print('Synthesising speech...')
@@ -65,9 +75,14 @@ if __name__ == "__main__":
     # TESTS #
     speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
+    gmail = Gmail()
 
     text = [
-        speech.generate_text_hello(),
-        speech.generate_text_news('https://telex.hu/rss')
-    ]
-    speech.synthesize(text)
+            speech.generate_text_hello(),
+            speech.generate_text_news('https://telex.hu/rss')
+        ]
+    for i in speech.generate_text_email(gmail.get_emails()):
+        text.append(i)
+
+    print(text)
+    # speech.synthesize(text)
