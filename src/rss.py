@@ -10,23 +10,23 @@ class Feed:
             raise RuntimeError('Invalid URL!')
         self.feed = feedparser.parse(url)
 
-    def all_titles(self):
-        print('Getting all entries from RSS feed...')
+    def titles(self, howmany: int = None):
+        print('Getting entries from RSS feed...')
         data = []
-        for item in self.feed['entries']:
+        if howmany is None:
+            howmany = len(self.feed['entries'])
+        for item in self.feed['entries'][:howmany]:
             data.append(item['title'])
         return data
 
-    def top_five_entries(self):
-        print('Getting top five entries from RSS feed...')
-        data = []
-        for item in self.feed['entries'][:5]:
-            data.append(item['title'])
-        return data
+    def source(self):
+        print('Getting RSS sources...')
+        href = self.feed['href']
+        return href.split('/')[2]
 
 
 if __name__ == "__main__":
     # TESTS #
     feed = Feed('https://telex.hu/rss')
-    data = feed.top_five_entries()
+    data = feed.titles(5)
     print(data)

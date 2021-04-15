@@ -93,7 +93,7 @@ def main():
                     text = [
                         speech.generate_text_hello(),
                         speech.generate_text_weather(weather_app.weather_info()),
-                        speech.generate_text_news_top('https://telex.hu/rss')
+                        speech.generate_text_news('https://telex.hu/rss')
                     ]
                     speech.synthesize(text)
                     # Continue playback

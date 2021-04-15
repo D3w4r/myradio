@@ -40,11 +40,13 @@ class Speech:
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
                 data["current"]["wind_speed"]) + " kilóméter per óra."
 
-    def generate_text_news_top(self, url):
+    def generate_text_news(self, url):
         print('Generating text from RSS feed')
         feed = Feed(url)
-        data = feed.top_five_entries()
-        return "A legújabb öt hír a következő. " + data[0] + ". " + data[1] + ". " + data[2] + ". " + data[3] + ". " + \
+        data = feed.titles(howmany=5)
+        source = feed.source()
+        print('From source: ' + source)
+        return "A legújabb hírek következnek, a " + source + " jóvoltából. " + data[0] + ". " + data[1] + ". " + data[2] + ". " + data[3] + ". " + \
                data[4] + "."
 
     def generate_text_breaking(self, data):
@@ -65,6 +67,7 @@ if __name__ == "__main__":
                     language='hu-HU', voice='hu-HU-NoemiNeural')
 
     text = [
-        speech.generate_text_hello()
+        speech.generate_text_hello(),
+        speech.generate_text_news('https://telex.hu/rss')
     ]
     speech.synthesize(text)
