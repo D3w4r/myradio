@@ -16,7 +16,7 @@ class Client:
         print('ACTIVE DEVICES:')
         devices = self.spotifyObject.devices()
         for device in devices['devices']:
-            print('name: ' + device['name'])
+            print(device['name'])
         return devices
 
     def set_primary_device(self, devices, idx):

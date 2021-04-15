@@ -5,6 +5,7 @@ from azure.cognitiveservices.speech import SpeechConfig
 
 from myradio.src import weather
 from myradio.src.client import Client
+from myradio.src.mail import Gmail
 
 from speech import Speech
 
@@ -26,13 +27,15 @@ def loopMsg():
 def main():
     # App setup
     # Weather
+    username = 'dewarhun'
     weather_app = weather.Weather('Budapest')
     # Speech
     speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
     # Spotify
-    username = 'dewarhun'
     client = Client(username)
+    # Gmail
+    gmail = Gmail()
     # Devices
     devices = client.active_devices()
     # Set primary device
@@ -45,11 +48,11 @@ def main():
     user = client.user()
     name = user['display_name']
     followers = user['followers']['total']
+    print()
     print(f'Username: {name}')
     print(f'Followers: {followers}')
 
     # Main loop
-
     while True:
 
         loopMsg()
@@ -59,7 +62,7 @@ def main():
         # Search for artist
         if choice == '0':
 
-            search_query = input("Ok, what's their name?:")
+            search_query = input("Ok, what's their name?: ")
             # Get search results
             search_results = client.search(search_query, 1, 0, 'artist')
             # Print artist details
@@ -95,6 +98,8 @@ def main():
                         speech.generate_text_weather(weather_app.weather_info()),
                         speech.generate_text_news('https://telex.hu/rss')
                     ]
+                    for i in speech.generate_text_email(gmail.get_emails()):
+                        text.append(i)
                     speech.synthesize(text)
                     # Continue playback
                     print(f"Continuing last track: {name}")
