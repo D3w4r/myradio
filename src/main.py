@@ -1,7 +1,12 @@
+import os
 import time
+
+from azure.cognitiveservices.speech import SpeechConfig
 
 from myradio.src import weather
 from myradio.src.client import Client
+
+from speech import Speech
 
 
 def info(subject):
@@ -18,11 +23,20 @@ def loopMsg():
     print()
 
 
+# App setup
+# Weather
 weatherApp = weather.Weather('Budapest')
-weatherApp.synthesise(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav", 'hu-HU', 'hu-HU-NoemiNeural')
-
+# Speech
+speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
+                language='hu-HU', voice='hu-HU-NoemiNeural')
+# Spotify
 username = 'dewarhun'
 client = Client(username)
+
+
+def main():
+    pass
+
 
 # Devices
 devices = client.active_devices()
@@ -37,7 +51,7 @@ user = client.user()
 name = user['display_name']
 followers = user['followers']['total']
 print(f'Username: {name}')
-print(f'Followers: {client.getFollowersNum(user)}')
+print(f'Followers: {followers}')
 
 # Main loop
 
@@ -80,13 +94,13 @@ while True:
                 print(f"Stopping last track: {name}")
                 # Play sample audio
                 client.pause_playback()
-
-                client.simulate_speech()
-
+                # Synthesize speech
+                text = speech.generate_text_weather(weatherApp.weather_info())
+                speech.synthesize(text)
+                # Continue playback
                 print(f"Continuing last track: {name}")
-
                 client.start_playback(context_uri=None, uris=selected, progress_ms=progress_ms)
-
+                # Delete selected song
                 selected.pop()
 
     if choice == '1':

@@ -1,11 +1,10 @@
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
-from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
 
 class Speech:
     """"Class for generating and synthesising speech"""
 
-    def __init__(self, speechconfig: SpeechConfig, audioconfig: AudioOutputConfig, voice, language):
+    def __init__(self, speechconfig: SpeechConfig, voice, language):
         if voice is None:
             raise RuntimeError('Please specify a voice')
         if language is None:
@@ -14,7 +13,7 @@ class Speech:
         speech_config = speechconfig
         speech_config.speech_synthesis_language = language
         speechconfig.speech_synthesis_voice_name = voice
-        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=audioconfig)
+        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config)
 
     def generate_text_weather(self, data):
         print('Generating text for weather...')
@@ -25,7 +24,7 @@ class Speech:
                 data["current"]["wind_speed"]) + " kilometers an hour."
             return text
         if self.language == 'hu-HU':
-            text = "Jelenleg " + str(data["current"]["temp"]) + "fok van, ami " + str(
+            text = "Jelenleg " + str(data["current"]["temp"]) + " fok van, ami " + str(
                 data["current"]["feels_like"]) + " foknak érződik. Az időjárás leírása: " + str(
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
                 data["current"]["wind_speed"]) + " kilóméter per óra."
