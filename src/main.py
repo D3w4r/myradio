@@ -1,7 +1,12 @@
+import os
 import time
+
+from azure.cognitiveservices.speech import SpeechConfig
 
 from myradio.src import weather
 from myradio.src.client import Client
+
+from speech import Speech
 
 
 def info(subject):
@@ -18,76 +23,88 @@ def loopMsg():
     print()
 
 
-weatherApp = weather.Weather('Budapest')
-weatherApp.synthesise(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav", 'hu-HU', 'hu-HU-NoemiNeural')
+def main():
+    # App setup
+    # Weather
+    weather_app = weather.Weather('Budapest')
+    # Speech
+    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
+                    language='hu-HU', voice='hu-HU-NoemiNeural')
+    # Spotify
+    username = 'dewarhun'
+    client = Client(username)
+    # Devices
+    devices = client.active_devices()
+    # Set primary device
+    client.set_primary_device(devices, 0)
+    # Current track information
+    current_track = client.current_track('v')
+    artist = client.get_artist(current_track)
+    print(artist)
+    # User info
+    user = client.user()
+    name = user['display_name']
+    followers = user['followers']['total']
+    print(f'Username: {name}')
+    print(f'Followers: {followers}')
 
-username = 'dewarhun'
-client = Client(username)
+    # Main loop
 
-# Devices
-devices = client.active_devices()
-# Set primary device
-client.set_primary_device(devices, 0)
-# Current track information
-current_track = client.current_track('v')
-artist = client.get_artist(current_track)
-print(artist)
-# User info
-user = client.user()
-name = user['display_name']
-followers = user['followers']['total']
-print(f'Username: {name}')
-print(f'Followers: {client.getFollowersNum(user)}')
+    while True:
 
-# Main loop
+        loopMsg()
 
-while True:
+        choice = input("Enter your choice: ")
 
-    loopMsg()
+        # Search for artist
+        if choice == '0':
 
-    choice = input("Enter your choice: ")
+            search_query = input("Ok, what's their name?:")
+            # Get search results
+            search_results = client.search(search_query, 1, 0, 'artist')
+            # Print artist details
+            artist = search_results['artists']['items'][0]
 
-    # Search for artist
-    if choice == '0':
+            info(artist)
 
-        searchQuery = input("Ok, what's their name?:")
-        # Get search results
-        searchResults = client.search(searchQuery, 1, 0, 'artist')
-        # Print artist details
-        artist = searchResults['artists']['items'][0]
+            artist_id = artist['id']
 
-        info(artist)
+            all_tracks = client.get_tracks_by_artist(artist_id)
 
-        artist_id = artist['id']
+            selected = []
+            while True:
+                selected.append(client.select_song(all_tracks))
+                if selected is None:
+                    break
+                else:
+                    # Start playback
+                    client.start_playback(None, selected)
+                    # Wait 10 seconds
+                    time.sleep(10)
+                    # Get info about the current track
+                    current_track = client.current_track()
+                    progress_ms = current_track['progress_ms']
+                    name = current_track['item']['name']
+                    # Stop playback
+                    print(f"Stopping last track: {name}")
+                    # Play sample audio
+                    client.pause_playback()
+                    # Synthesize speech
+                    text = [
+                        speech.generate_text_hello(),
+                        speech.generate_text_weather(weather_app.weather_info()),
+                        speech.generate_text_news('https://telex.hu/rss')
+                    ]
+                    speech.synthesize(text)
+                    # Continue playback
+                    print(f"Continuing last track: {name}")
+                    client.start_playback(context_uri=None, uris=selected, progress_ms=progress_ms)
+                    # Delete selected song
+                    selected.pop()
 
-        all_tracks = client.get_tracks_by_artist(artist_id)
+        if choice == '1':
+            break
 
-        selected = []
-        while True:
-            selected.append(client.select_song(all_tracks))
-            if selected is None:
-                break
-            else:
-                # Start playback
-                client.start_playback(None, selected)
-                # Wait 10 seconds
-                time.sleep(10)
-                # Get info about the current track
-                current_track = client.current_track()
-                progress_ms = current_track['progress_ms']
-                name = current_track['item']['name']
-                # Stop playback
-                print(f"Stopping last track: {name}")
-                # Play sample audio
-                client.pause_playback()
 
-                client.simulate_speech()
-
-                print(f"Continuing last track: {name}")
-
-                client.start_playback(context_uri=None, uris=selected, progress_ms=progress_ms)
-
-                selected.pop()
-
-    if choice == '1':
-        break
+if __name__ == "__main__":
+    main()

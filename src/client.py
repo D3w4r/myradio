@@ -1,12 +1,9 @@
-import time
-
 import spotipy
-import vlc
-from mutagen.wave import WAVE
 from spotipy.oauth2 import SpotifyOAuth
 
 
 class Client:
+    """A wrapper class for Spotipy"""
 
     def __init__(self,
                  username,
@@ -14,10 +11,6 @@ class Client:
                  ):
         self.username = username
         self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-        self.audio_info = {
-            "file": r"D:\Data\ProjectLaboratory\myradio\src\weather.wav",
-            "length": WAVE(r"D:\Data\ProjectLaboratory\myradio\src\weather.wav").info.length
-        }
 
     def active_devices(self):
         print('ACTIVE DEVICES:')
@@ -83,11 +76,6 @@ class Client:
         if selection == 'x':
             return None
         return from_tracks[int(selection)]
-
-    def simulate_speech(self):
-        print(f"Audio length: {round(self.audio_info['length'])} seconds.")
-        vlc.MediaPlayer(self.audio_info['file']).play()
-        time.sleep(self.audio_info['length'])
 
     def pause_playback(self):
         self.spotifyObject.pause_playback(self.device)
