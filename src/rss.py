@@ -25,7 +25,8 @@ class Feed:
         return data
 
 
-# TESTS
-feed = Feed('https://telex.hu/rss')
-data = feed.top_five_entries()
-print(data)
+if __name__ == "__main__":
+    # TESTS #
+    feed = Feed('https://telex.hu/rss')
+    data = feed.top_five_entries()
+    print(data)

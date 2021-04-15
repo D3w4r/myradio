@@ -1,3 +1,6 @@
+import os
+from datetime import datetime, date
+
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from rss import Feed
 
@@ -16,27 +19,33 @@ class Speech:
         speechconfig.speech_synthesis_voice_name = voice
         self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config)
 
+    def generate_text_hello(self):
+        print('Hello TTS!')
+        today = date.today().strftime("%Y.%m.%d.")
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        return "Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."
+
     def generate_text_weather(self, data):
         print('Generating text for weather...')
         if self.language == 'en-EN':
-            text = "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
+            return "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
                 data["current"]["feels_like"]) + " degrees outside. The description of the weather is " + str(
                 data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
                 data["current"]["wind_speed"]) + " kilometers an hour."
-            return text
+
         if self.language == 'hu-HU':
-            text = "Jelenleg " + str(data["current"]["temp"]) + " fok van, ami " + str(
+            return "Jelenleg " + str(data["current"]["temp"]) + " fok van, ami " + str(
                 data["current"]["feels_like"]) + " foknak érződik. Az időjárás leírása: " + str(
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
                 data["current"]["wind_speed"]) + " kilóméter per óra."
-            return text
 
     def generate_text_news_top(self, url):
+        print('Generating text from RSS feed')
         feed = Feed(url)
         data = feed.top_five_entries()
-        text = "A jelenlegi hírek a következőek: " + data[0] + ". " + data[1] + ". " + data[2] + ". " + data[3] + ". " + \
+        return "A legújabb öt hír a következő. " + data[0] + ". " + data[1] + ". " + data[2] + ". " + data[3] + ". " + \
                data[4] + "."
-        return text
 
     def generate_text_breaking(self, data):
         pass
@@ -48,3 +57,14 @@ class Speech:
         print('Synthesising speech...')
         for item in text:
             self.speech_synthesizer.speak_text(item)
+
+
+if __name__ == "__main__":
+    # TESTS #
+    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
+                    language='hu-HU', voice='hu-HU-NoemiNeural')
+
+    text = [
+        speech.generate_text_hello()
+    ]
+    speech.synthesize(text)

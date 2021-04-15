@@ -15,5 +15,6 @@ the user, through an RSS feed from [telex.hu](https://telex.hu/)
 * geopy
 * azure-cognitiveservices-speech
 * python-vlc
+* feedparser
 
-**Please note, that you need to use your own API keys for Azure TTS and OpenWeathermap**
+**Please note, that you need to use your own API keys for Azure TTS and OpenWeatherMap**
