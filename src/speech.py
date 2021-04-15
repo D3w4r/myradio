@@ -48,7 +48,8 @@ class Speech:
         data = feed.titles(howmany=5)
         source = feed.source()
         print('From source: ' + source)
-        return "A legújabb hírek következnek, a " + source + " jóvoltából. " + data[0] + ". " + data[1] + ". " + data[2] + ". " + data[3] + ". " + \
+        return "A legújabb hírek következnek, a " + source + " jóvoltából. " + data[0] + ". " + data[1] + ". " + data[
+            2] + ". " + data[3] + ". " + \
                data[4] + "."
 
     def generate_text_breaking(self, data):
@@ -71,18 +72,17 @@ class Speech:
             self.speech_synthesizer.speak_text(item)
 
 
+# TESTS #
 if __name__ == "__main__":
-    # TESTS #
     speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
     gmail = Gmail()
 
     text = [
-            speech.generate_text_hello(),
-            speech.generate_text_news('https://telex.hu/rss')
-        ]
+        speech.generate_text_hello(),
+        speech.generate_text_news('https://telex.hu/rss')
+    ]
     for i in speech.generate_text_email(gmail.get_emails()):
         text.append(i)
 
-    print(text)
-    # speech.synthesize(text)
+    speech.synthesize(text)

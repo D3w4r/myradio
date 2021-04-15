@@ -70,7 +70,7 @@ class Gmail:
                 )
         return ret
 
-
+# TESTS
 if __name__ == "__main__":
     gmail = Gmail()
     for item in gmail.get_emails():
