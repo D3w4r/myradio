@@ -41,4 +41,4 @@ class Speech:
 
     def synthesize(self, text):
         print('Synthesising speech...')
-        self.speech_synthesizer.speak_text_async(text)
+        self.speech_synthesizer.speak_text(text)
