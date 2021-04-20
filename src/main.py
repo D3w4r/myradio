@@ -1,5 +1,4 @@
 import os
-import threading
 import time
 
 from azure.cognitiveservices.speech import SpeechConfig
@@ -7,9 +6,7 @@ from azure.cognitiveservices.speech import SpeechConfig
 from myradio.src import weather
 from myradio.src.client import Client
 from myradio.src.mail import Gmail
-from myradio.src.mythread import SimpleThread, LockThread
-
-from speech import Speech
+from myradio.src.speech import Speech
 
 
 def info(subject):
@@ -111,14 +108,6 @@ def main():
 
         if choice == '1':
             break
-
-
-def main2():
-    thread1 = SimpleThread(1, "music-thread")
-    thread2 = LockThread(2, "tts-thread")
-
-    thread1.start()
-    thread2.start()
 
 
 if __name__ == "__main__":
