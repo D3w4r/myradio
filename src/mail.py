@@ -22,7 +22,7 @@ class Gmail:
                 self.credentials.refresh(Request())
             else:
                 self.flow = InstalledAppFlow.from_client_secrets_file('auth/credentials.json', self.SCOPES)
-                self.credentials = self.flow.run_local_server(port=8080)
+                self.credentials = self.flow.run_local_server(port=9090)
 
             # Save access token
             with open('auth/token.pickle', 'wb') as token:
