@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, date
 
+import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
@@ -67,10 +68,18 @@ class Speech:
             )
         return text
 
-    def synthesize(self, text: list):
+    def synthesize(self, text_list: list):
         print('Synthesising speech...')
-        for item in text:
-            self.speech_synthesizer.speak_text(item)
+        for item in text_list:
+            result = self.speech_synthesizer.speak_text(item)
+            if result.reason == speechsdk.ResultReason.Canceled:
+                cancellation_details = result.cancellation_details
+                print(f"Speech synthesis canceled: {cancellation_details.reason}")
+                if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                    if cancellation_details.error_details:
+                        print(f"Error details: {cancellation_details.error_details}")
+                break
+
 
 
 # TESTS #
