@@ -14,9 +14,8 @@ the user, through an RSS feed from [telex.hu](https://telex.hu/)
 * spotipy
 * geopy
 * azure-cognitiveservices-speech
-* python-vlc
 * feedparser
-* oogle-api-python-client 
+* google-api-python-client 
 * google-auth-httplib2
 * google-auth-oauthlib
 
