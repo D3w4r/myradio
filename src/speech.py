@@ -2,9 +2,10 @@ import os
 from datetime import datetime, date
 
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
+from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
 from myradio.src.mail import Gmail
-from rss import Feed
+from myradio.src.rss import Feed
 
 
 class Speech:
@@ -19,7 +20,7 @@ class Speech:
         speech_config = speechconfig
         speech_config.speech_synthesis_language = language
         speechconfig.speech_synthesis_voice_name = voice
-        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config)
+        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=AudioOutputConfig(use_default_speaker=True))
 
     def generate_text_hello(self):
         print('Hello TTS!')
