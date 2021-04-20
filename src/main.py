@@ -7,7 +7,7 @@ from azure.cognitiveservices.speech import SpeechConfig
 from myradio.src import weather
 from myradio.src.client import Client
 from myradio.src.mail import Gmail
-from myradio.src.thread import SimpleThread, LockThread
+from myradio.src.mythread import SimpleThread, LockThread
 
 from speech import Speech
 
@@ -112,6 +112,7 @@ def main():
         if choice == '1':
             break
 
+
 def main2():
     thread1 = SimpleThread(1, "music-thread")
     thread2 = LockThread(2, "tts-thread")
@@ -119,6 +120,7 @@ def main2():
     thread1.start()
     thread2.start()
 
+
 if __name__ == "__main__":
-    #main()
-    main2()
+    main()
+    # main2()
