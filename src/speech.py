@@ -21,7 +21,8 @@ class Speech:
         speech_config = speechconfig
         speech_config.speech_synthesis_language = language
         speechconfig.speech_synthesis_voice_name = voice
-        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=AudioOutputConfig(use_default_speaker=True))
+        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config,
+                                                    audio_config=AudioOutputConfig(use_default_speaker=True))
 
     def generate_text_hello(self):
         print('Hello TTS!')
@@ -79,7 +80,6 @@ class Speech:
                     if cancellation_details.error_details:
                         print(f"Error details: {cancellation_details.error_details}")
                 break
-
 
 
 # TESTS #
