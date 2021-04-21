@@ -48,12 +48,13 @@ class Speech:
     def generate_text_news(self, url):
         print('Generating text from RSS feed')
         feed = Feed(url)
-        data = feed.titles(howmany=5)
+        data = feed.titles(howmany=6)
         source = feed.source()
         print('From source: ' + source)
-        return "A legújabb hírek következnek, a " + source + " jóvoltából. " + data[0] + ". " + data[1] + ". " + data[
-            2] + ". " + data[3] + ". " + \
-               data[4] + "."
+        return_data = ["A legújabb hírek következnek, a " + source + " jóvoltából. "]
+        for sentence in data:
+            return_data.append(sentence + ". ")
+        return return_data
 
     def generate_text_breaking(self, data):
         pass
@@ -65,7 +66,7 @@ class Speech:
         ]
         for item in data:
             text.append(
-                "Feladó: " + item['sender'] + ", téma: " + item['subject'] + "."
+                "Érkezett: " + item['date'] + " , feladó: " + item['sender'] + ", téma: " + item['subject'] + ". "
             )
         return text
 
@@ -89,10 +90,11 @@ if __name__ == "__main__":
     gmail = Gmail()
 
     text = [
-        speech.generate_text_hello(),
-        speech.generate_text_news('https://telex.hu/rss')
+        speech.generate_text_hello()
     ]
+    #text = text + speech.generate_text_news('https://telex.hu/rss')
     for i in speech.generate_text_email(gmail.get_emails()):
         text.append(i)
 
+    print(text)
     speech.synthesize(text)

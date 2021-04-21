@@ -1,3 +1,4 @@
+import datetime
 import os
 import pickle
 from pprint import pprint
@@ -33,7 +34,8 @@ class Gmail:
         service = build('gmail', 'v1', credentials=self.credentials)
 
         # Request a list of all messages
-        result = service.users().messages().list(maxResults=10, userId='me').execute()
+        result = service.users().messages().list(maxResults=5, userId='me',
+                                                 labelIds=['UNREAD', 'CATEGORY_PERSONAL']).execute()
 
         # Messages is a list of dicts, where each dict contains a message ID
         messages = result.get('messages')
@@ -44,31 +46,36 @@ class Gmail:
         for msg in messages:
             txt = service.users().messages().get(userId='me', id=msg['id']).execute()
 
-            label = txt['labelIds']
+            subject = None
+            sender = None
 
-            if 'UNREAD' in label and 'CATEGORY_SOCIAL' not in label and 'CATEGORY_PROMOTIONS':
-                try:
-                    # Get value of 'payload' from dictionary 'txt'
-                    payload = txt['payload']
-                    headers = payload['headers']
+            try:
+                # Get value of 'payload' from dictionary 'txt'
+                payload = txt['payload']
+                headers = payload['headers']
 
-                    # Look for Subject and Sender Email in the headers
-                    for d in headers:
-                        if d['name'] == 'Subject':
-                            subject = d['value']
-                        if d['name'] == 'From':
-                            sender = str(d['value'])
-                            sender = sender.replace('\"', "").split('<')[0]
-                except:
-                    raise Exception("Error whilst getting messages!")
+                # Look for Subject and Sender Email in the headers
+                for header in headers:
+                    if header['name'] == 'Subject':
+                        subject = header['value']
+                    if header['name'] == 'From':
+                        sender = str(header['value'])
+                        sender = sender.replace('\"', "").split('<')[0]
+                date = datetime.datetime.fromtimestamp(int(txt['internalDate']) / 1000)
+                date = date.strftime("%Y.%m.%d.")
 
-                ret.append(
-                    {
-                        "subject": subject,
-                        "sender": sender
-                    }
-                )
+            except:
+                raise Exception("Error whilst getting messages!")
+
+            ret.append(
+                {
+                    "subject": subject,
+                    "sender": sender,
+                    "date": date
+                }
+            )
         return ret
+
 
 # TESTS
 if __name__ == "__main__":
