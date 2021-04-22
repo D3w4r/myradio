@@ -1,5 +1,5 @@
 import os
-import pprint
+import json
 from datetime import datetime, date
 
 import azure.cognitiveservices.speech as speechsdk
@@ -65,10 +65,22 @@ class Speech:
         text = [
             "A következő üzenetei érkeztek. "
         ]
-        with open('repository.txt', 'r') as file:
-            print(file.read())
+        with open('repository.json', mode='r', encoding='utf-8') as file:
+            dict_elem = json.load(file)
+            print(f"Input: {dict_elem}")
+            for item in data[:]:
+                if item in dict_elem:
+                    data.remove(item)
+                else:
+                    dict_elem.append(item)
+        with open('repository.json', 'w', encoding='utf-8') as file:
+            json.dump(dict_elem, file, ensure_ascii=False)
+        print(f"Data: {data}, len: {len(data)}")
+        if len(data) == 0:
+            text = ['Nem érkezett új üzenete.']
         for item in data:
-            text.append("Érkezett: " + item['date'] + " , feladó: " + item['sender'] + ", téma: " + item['subject'] + ". ")
+            text.append(
+                "Érkezett: " + item['date'] + " , feladó: " + item['sender'] + ", téma: " + item['subject'] + ". ")
         return text
 
     def synthesize(self, text_list: list):
@@ -86,10 +98,6 @@ class Speech:
 
 # TESTS #
 if __name__ == "__main__":
-    if not os.path.exists('src/repository.txt'):
-        f = open('repository.txt', 'w')
-        f.close()
-
     speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
     gmail = Gmail()
@@ -97,7 +105,7 @@ if __name__ == "__main__":
     text = [
         speech.generate_text_hello()
     ]
-    text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+    # text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
     for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
         text.append(i)
     speech.synthesize(text)
