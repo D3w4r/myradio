@@ -1,5 +1,7 @@
 import os
 import time
+from timeit import default_timer as timer
+from datetime import timedelta
 
 from azure.cognitiveservices.speech import SpeechConfig
 
@@ -75,10 +77,11 @@ def main():
 
             selected = []
             while True:
-                selected.append(client.select_song(all_tracks))
-                if selected is None:
+                selection = client.select_song(all_tracks)
+                if selection is None:
                     break
                 else:
+                    selected.append(selection)
                     # Start playback
                     client.start_playback(None, selected)
                     # Wait 10 seconds
@@ -89,7 +92,7 @@ def main():
                     name = current_track['item']['name']
                     # Stop playback
                     print(f"Stopping last track: {name}")
-                    # Play sample audio
+                    #if difference == 10:
                     client.pause_playback()
                     # Synthesize speech
                     text = [
