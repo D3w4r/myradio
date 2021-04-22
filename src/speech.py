@@ -1,4 +1,5 @@
 import os
+import pprint
 from datetime import datetime, date
 
 import azure.cognitiveservices.speech as speechsdk
@@ -45,13 +46,13 @@ class Speech:
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
                 data["current"]["wind_speed"]) + " kilóméter per óra."
 
-    def generate_text_news(self, url):
+    def generate_text_news(self, url, how_many: int):
         print('Generating text from RSS feed')
         feed = Feed(url)
-        data = feed.titles(howmany=6)
+        data = feed.titles(howmany=how_many)
         source = feed.source()
         print('From source: ' + source)
-        return_data = ["A legújabb hírek következnek, a " + source + " jóvoltából. "]
+        return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
         for sentence in data:
             return_data.append(sentence + ". ")
         return return_data
@@ -64,10 +65,10 @@ class Speech:
         text = [
             "A következő üzenetei érkeztek. "
         ]
+        with open('repository.txt', 'r') as file:
+            print(file.read())
         for item in data:
-            text.append(
-                "Érkezett: " + item['date'] + " , feladó: " + item['sender'] + ", téma: " + item['subject'] + ". "
-            )
+            text.append("Érkezett: " + item['date'] + " , feladó: " + item['sender'] + ", téma: " + item['subject'] + ". ")
         return text
 
     def synthesize(self, text_list: list):
@@ -85,6 +86,10 @@ class Speech:
 
 # TESTS #
 if __name__ == "__main__":
+    if not os.path.exists('src/repository.txt'):
+        f = open('repository.txt', 'w')
+        f.close()
+
     speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
     gmail = Gmail()
@@ -92,9 +97,7 @@ if __name__ == "__main__":
     text = [
         speech.generate_text_hello()
     ]
-    #text = text + speech.generate_text_news('https://telex.hu/rss')
-    for i in speech.generate_text_email(gmail.get_emails()):
+    text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+    for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
         text.append(i)
-
-    print(text)
     speech.synthesize(text)

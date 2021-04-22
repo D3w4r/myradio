@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import pickle
 from pprint import pprint
@@ -17,7 +18,6 @@ class Gmail:
         if os.path.exists('auth/token.pickle'):
             with open('auth/token.pickle', 'rb') as token:
                 self.credentials = pickle.load(token)
-
         if not self.credentials or not self.credentials.valid:
             if self.credentials and self.credentials.expired and self.credentials.refresh_token:
                 self.credentials.refresh(Request())
@@ -29,13 +29,13 @@ class Gmail:
             with open('auth/token.pickle', 'wb') as token:
                 pickle.dump(self.credentials, token)
 
-    def get_emails(self):
+    def get_emails(self, how_many: int, by_labels: list):
         # Connect to Gmail API
         service = build('gmail', 'v1', credentials=self.credentials)
 
         # Request a list of all messages
-        result = service.users().messages().list(maxResults=5, userId='me',
-                                                 labelIds=['UNREAD', 'CATEGORY_PERSONAL']).execute()
+        result = service.users().messages().list(maxResults=how_many, userId='me',
+                                                 labelIds=by_labels).execute()
 
         # Messages is a list of dicts, where each dict contains a message ID
         messages = result.get('messages')
@@ -74,11 +74,13 @@ class Gmail:
                     "date": date
                 }
             )
+        with open('repository.txt', 'w', encoding='utf-8') as file:
+            json.dump(ret, file, ensure_ascii=False)
         return ret
 
 
 # TESTS
 if __name__ == "__main__":
     gmail = Gmail()
-    for item in gmail.get_emails():
+    for item in gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL']):
         pprint(item)

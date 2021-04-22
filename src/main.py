@@ -94,10 +94,11 @@ def main():
                     # Synthesize speech
                     text = [
                         speech.generate_text_hello(),
-                        speech.generate_text_weather(weather_app.weather_info()),
-                        speech.generate_text_news('https://telex.hu/rss')
+                        speech.generate_text_weather(weather_app.weather_info())
                     ]
-                    for i in speech.generate_text_email(gmail.get_emails()):
+                    text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+                    for i in speech.generate_text_email(
+                            gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL'])):
                         text.append(i)
                     speech.synthesize(text)
                     # Continue playback
@@ -112,4 +113,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # main2()
