@@ -30,7 +30,7 @@ def speak(client: Client, thread: MusicThread):
             speech.generate_text_hello(),
             speech.generate_text_weather(weather_app.weather_info())
         ]
-        text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+        text = text + speech.generate_text_news('https://telex.hu/rss', how_many=2)
         for i in speech.generate_text_email(
                 gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL'])):
             text.append(i)

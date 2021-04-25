@@ -24,6 +24,7 @@ class Speech:
         speechconfig.speech_synthesis_voice_name = voice
         self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config,
                                                     audio_config=AudioOutputConfig(use_default_speaker=True))
+        self.setup = True
 
     def generate_text_hello(self):
         print('Hello TTS!')
@@ -48,7 +49,32 @@ class Speech:
 
     def generate_text_news(self, url, how_many: int):
         print('Generating text from RSS feed')
-        feed = Feed(url)
+        headings = []
+        if self.setup:
+            print()
+            print('Please choose which headings are you interested in (e.g. 1 2 3): ')
+            print('1. -- Belföld')
+            print('2. -- Gazdaság')
+            print('3. -- Külföld')
+            print('4. -- Kult')
+            print('5. -- Tech')
+            options = input('Your choice: ')
+            options = options.split(" ")
+            for item in options:
+                if item == 1:
+                    headings.append('belfold')
+                if item == 2:
+                    headings.append('gazdasag')
+                if item == 3:
+                    headings.append('kulfold')
+                if item == 4:
+                    headings.append('kult')
+                if item == 5:
+                    headings.append('tech')
+                else:
+                    raise Exception('Wrong input!')
+            self.setup = False
+        feed = Feed(url, heading=headings)
         data = feed.titles(howmany=how_many)
         source = feed.source()
         print('From source: ' + source)
@@ -56,9 +82,6 @@ class Speech:
         for sentence in data:
             return_data.append(sentence + ". ")
         return return_data
-
-    def generate_text_breaking(self, data):
-        pass
 
     def generate_text_email(self, data: list):
         print("Generating text from incoming emails")

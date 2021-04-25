@@ -2,9 +2,6 @@ import json
 import os
 
 import requests
-from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
-from azure.cognitiveservices.speech.audio import AudioOutputConfig
-
 from geopy.geocoders import Nominatim
 
 
