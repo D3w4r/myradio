@@ -24,6 +24,14 @@ class Speech:
         speechconfig.speech_synthesis_voice_name = voice
         self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config,
                                                     audio_config=AudioOutputConfig(use_default_speaker=True))
+        self.setup = True
+
+    def getFlag(self):
+        return self.setup
+
+    def setFlag(self):
+        """You can only call it once"""
+        self.setup = False
 
     def generate_text_hello(self):
         print('Hello TTS!')
@@ -48,7 +56,9 @@ class Speech:
 
     def generate_text_news(self, url, how_many: int):
         print('Generating text from RSS feed')
-        feed = Feed(url)
+        with open('data/headings.json', 'r') as file:
+            headings = json.load(file)
+        feed = Feed(url, heading=headings)
         data = feed.titles(howmany=how_many)
         source = feed.source()
         print('From source: ' + source)
@@ -57,25 +67,21 @@ class Speech:
             return_data.append(sentence + ". ")
         return return_data
 
-    def generate_text_breaking(self, data):
-        pass
-
     def generate_text_email(self, data: list):
         print("Generating text from incoming emails")
         text = [
             "A következő üzenetei érkeztek. "
         ]
-        with open('repository.json', mode='r', encoding='utf-8') as file:
+        with open('data/repository.json', mode='r', encoding='utf-8') as file:
             dict_elem = json.load(file)
-            print(f"Input: {dict_elem}")
             for item in data[:]:
                 if item in dict_elem:
                     data.remove(item)
                 else:
                     dict_elem.append(item)
-        with open('repository.json', 'w', encoding='utf-8') as file:
+        with open('data/repository.json', 'w', encoding='utf-8') as file:
             json.dump(dict_elem, file, ensure_ascii=False)
-        print(f"Outpu: {data}, len: {len(data)}")
+        print(f"New messages: {data}")
         if len(data) == 0:
             text = ['Nem érkezett új üzenete.']
         for item in data:
@@ -105,7 +111,7 @@ if __name__ == "__main__":
     text = [
         speech.generate_text_hello()
     ]
-    # text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+    #text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
     for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
         text.append(i)
     speech.synthesize(text)
