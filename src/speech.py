@@ -67,7 +67,6 @@ class Speech:
         ]
         with open('repository.json', mode='r', encoding='utf-8') as file:
             dict_elem = json.load(file)
-            print(f"Input: {dict_elem}")
             for item in data[:]:
                 if item in dict_elem:
                     data.remove(item)
@@ -75,7 +74,7 @@ class Speech:
                     dict_elem.append(item)
         with open('repository.json', 'w', encoding='utf-8') as file:
             json.dump(dict_elem, file, ensure_ascii=False)
-        print(f"Outpu: {data}, len: {len(data)}")
+        print(f"New messages: {data}, len: {len(data)}")
         if len(data) == 0:
             text = ['Nem érkezett új üzenete.']
         for item in data:

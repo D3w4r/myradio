@@ -10,43 +10,40 @@ from myradio.src.mythread import MusicThread
 from myradio.src.speech import Speech
 
 
-def speak(client: Client):
-    weather_app = weather.Weather('Budapest')
-    # Speech
-    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
-                    language='hu-HU', voice='hu-HU-NoemiNeural')
-    gmail = Gmail()
+def speak(client: Client, thread: MusicThread):
+    if thread.getFlag():
+        weather_app = weather.Weather('Budapest')
+        # Speech
+        speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
+                        language='hu-HU', voice='hu-HU-NoemiNeural')
+        gmail = Gmail()
 
-    current_track = client.current_track()
-    progress_ms = current_track['progress_ms']
-    name = current_track['item']['name']
-    # Stop playback
-    print(f"Stopping last track: {name}")
-    # if difference == 10:
-    client.pause_playback()
-    # Synthesize speech
-    text = [
-        speech.generate_text_hello(),
-        speech.generate_text_weather(weather_app.weather_info())
-    ]
-    text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
-    for i in speech.generate_text_email(
-            gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL'])):
-        text.append(i)
-    speech.synthesize(text)
-    print(f"Continuing last track: {name}")
-    uris = [current_track['item']['uri']]
-    client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
+        current_track = client.current_track()
+        progress_ms = current_track['progress_ms']
+        name = current_track['item']['name']
+        print(f"Stopping last track: {name}")
+        client.pause_playback()
+        text = [
+            speech.generate_text_hello(),
+            speech.generate_text_weather(weather_app.weather_info())
+        ]
+        text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+        for i in speech.generate_text_email(
+                gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL'])):
+            text.append(i)
+        speech.synthesize(text)
+        print(f"Continuing last track: {name}")
+        uris = [current_track['item']['uri']]
+        client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
 
 
-def main2():
+def main():
     client = Client('dewarhun')
     t1 = MusicThread(client=client, threadName='music-thread', threadID=1)
-
     t1.start()
-    timer = multitimer.MultiTimer(interval=10.0, function=speak, args=[client], runonstart=False)
+    timer = multitimer.MultiTimer(interval=10.0, function=speak, args=[client, t1], runonstart=False)
     timer.start()
 
 
 if __name__ == "__main__":
-    main2()
+    main()
