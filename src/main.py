@@ -12,10 +12,12 @@ from myradio.src.speech import Speech
 
 def speak(client: Client, thread: MusicThread):
     if thread.getFlag():
+        # Weather
         weather_app = weather.Weather('Budapest')
         # Speech
         speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                         language='hu-HU', voice='hu-HU-NoemiNeural')
+        # Mail
         gmail = Gmail()
 
         current_track = client.current_track()
@@ -23,6 +25,7 @@ def speak(client: Client, thread: MusicThread):
         name = current_track['item']['name']
         print(f"Stopping last track: {name}")
         client.pause_playback()
+        # Synthesise
         text = [
             speech.generate_text_hello(),
             speech.generate_text_weather(weather_app.weather_info())
@@ -32,6 +35,7 @@ def speak(client: Client, thread: MusicThread):
                 gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL'])):
             text.append(i)
         speech.synthesize(text)
+        # Restart track
         print(f"Continuing last track: {name}")
         uris = [current_track['item']['uri']]
         client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)

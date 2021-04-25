@@ -11,6 +11,11 @@ class Feed:
         self.feed = feedparser.parse(url)
 
     def titles(self, howmany: int = None):
+        """
+
+        :param howmany: how many you want to get
+        :return: titles of feed entries
+        """
         print('Getting entries from RSS feed...')
         data = []
         if howmany is None:
@@ -20,6 +25,9 @@ class Feed:
         return data
 
     def source(self):
+        """
+        :return: the source of the rss feed
+        """
         print('Getting RSS sources...')
         href = self.feed['href']
         return href.split('/')[2]

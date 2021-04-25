@@ -29,14 +29,10 @@ class MusicThread(threading.Thread):
 
     def run(self):
         print(f'Started thread - {self.id} :: {self.name}')
-        # App setup
-        # Weather
-
-        # Devices
+        # Set devices
         devices = self.client.active_devices()
-        # Set primary device
         self.client.set_primary_device(devices, 0)
-        # Current track information
+        # Info of current track
         current_track = self.client.current_track('v')
         artist = self.client.get_artist(current_track)
         print(artist)
@@ -61,14 +57,13 @@ class MusicThread(threading.Thread):
                 search_results = self.client.search(search_query, 1, 0, 'artist')
                 # Print artist details
                 artist = search_results['artists']['items'][0]
-
                 info(artist)
 
                 artist_id = artist['id']
-
                 all_tracks = self.client.get_tracks_by_artist(artist_id)
 
                 selected = []
+
                 while True:
                     selection = self.client.select_song(all_tracks)
                     if selection is None:
