@@ -1,5 +1,5 @@
 import threading
-
+import sys
 from myradio.src.client import Client
 
 
@@ -52,7 +52,7 @@ class MusicThread(threading.Thread):
             if choice == '0':
                 search_query = input("Ok, what's their name?: ")
                 if search_query.lower() == 'x':
-                    exit(0)
+                    break
                 # Get search results
                 search_results = self.client.search(search_query, 1, 0, 'artist')
                 # Print artist details
@@ -75,8 +75,8 @@ class MusicThread(threading.Thread):
 
                         selected.pop()
 
-            elif choice == '1':
-                break
+            else:
+                exit()
 
     def getFlag(self):
         return self.flag

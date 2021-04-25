@@ -32,7 +32,7 @@ def speak(client: Client, thread: MusicThread):
         ]
         text = text + speech.generate_text_news('https://telex.hu/rss', how_many=2)
         for i in speech.generate_text_email(
-                gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL'])):
+                gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
             text.append(i)
         speech.synthesize(text)
         # Restart track
@@ -45,8 +45,12 @@ def main():
     client = Client('dewarhun')
     t1 = MusicThread(client=client, threadName='music-thread', threadID=1)
     t1.start()
-    timer = multitimer.MultiTimer(interval=10.0, function=speak, args=[client, t1], runonstart=False)
+    timer = multitimer.MultiTimer(interval=20.0, function=speak, args=[client, t1], runonstart=False)
     timer.start()
+
+    t1.join()
+    timer.stop()
+    timer.join()
 
 
 if __name__ == "__main__":

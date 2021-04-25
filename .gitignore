@@ -132,3 +132,4 @@ dmypy.json
 /logs/logs.txt
 /src/auth/
 /src/repository.json
+/src/data/repository.json

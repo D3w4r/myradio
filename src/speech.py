@@ -26,6 +26,13 @@ class Speech:
                                                     audio_config=AudioOutputConfig(use_default_speaker=True))
         self.setup = True
 
+    def getFlag(self):
+        return self.setup
+
+    def setFlag(self):
+        """You can only call it once"""
+        self.setup = False
+
     def generate_text_hello(self):
         print('Hello TTS!')
         today = date.today().strftime("%Y.%m.%d.")
@@ -49,31 +56,8 @@ class Speech:
 
     def generate_text_news(self, url, how_many: int):
         print('Generating text from RSS feed')
-        headings = []
-        if self.setup:
-            print()
-            print('Please choose which headings are you interested in (e.g. 1 2 3): ')
-            print('1. -- Belföld')
-            print('2. -- Gazdaság')
-            print('3. -- Külföld')
-            print('4. -- Kult')
-            print('5. -- Tech')
-            options = input('Your choice: ')
-            options = options.split(" ")
-            for item in options:
-                if item == 1:
-                    headings.append('belfold')
-                if item == 2:
-                    headings.append('gazdasag')
-                if item == 3:
-                    headings.append('kulfold')
-                if item == 4:
-                    headings.append('kult')
-                if item == 5:
-                    headings.append('tech')
-                else:
-                    raise Exception('Wrong input!')
-            self.setup = False
+        with open('data/headings.json', 'r') as file:
+            headings = json.load(file)
         feed = Feed(url, heading=headings)
         data = feed.titles(howmany=how_many)
         source = feed.source()
@@ -88,16 +72,16 @@ class Speech:
         text = [
             "A következő üzenetei érkeztek. "
         ]
-        with open('repository.json', mode='r', encoding='utf-8') as file:
+        with open('data/repository.json', mode='r', encoding='utf-8') as file:
             dict_elem = json.load(file)
             for item in data[:]:
                 if item in dict_elem:
                     data.remove(item)
                 else:
                     dict_elem.append(item)
-        with open('repository.json', 'w', encoding='utf-8') as file:
+        with open('data/repository.json', 'w', encoding='utf-8') as file:
             json.dump(dict_elem, file, ensure_ascii=False)
-        print(f"New messages: {data}, len: {len(data)}")
+        print(f"New messages: {data}")
         if len(data) == 0:
             text = ['Nem érkezett új üzenete.']
         for item in data:
@@ -127,7 +111,7 @@ if __name__ == "__main__":
     text = [
         speech.generate_text_hello()
     ]
-    text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
+    #text = text + speech.generate_text_news('https://telex.hu/rss', how_many=6)
     for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
         text.append(i)
     speech.synthesize(text)

@@ -80,8 +80,8 @@ class Gmail:
                     "date": date
                 }
             )
-        if os.stat('repository.json').st_size == 0:
-            with open('repository.json', 'w', encoding='utf-8') as file:
+        if os.stat('data/repository.json').st_size == 0:
+            with open('data/repository.json', 'w', encoding='utf-8') as file:
                 json.dump(ret, file, ensure_ascii=False)
         return ret
 
