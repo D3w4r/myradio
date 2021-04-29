@@ -74,6 +74,8 @@ for your Spotify Web Application. The `SPOTIFY_REDIRECT_URI` is `http://localhos
 
 > You can find your API keys at [this link](https://developer.spotify.com/dashboard/applications).
 
+In ``main.py`` `line 45`, please change the argument of `Client()` to your username. 
+
 ### Gmail API
 
 For this part you will be needing the `credentails.json` file to be copied into `src/auth`. After that, please authorize
@@ -87,3 +89,8 @@ For this code to work please create an environmental variable called `AZURE_TTS_
 ### OpenWeatherMap
 
 Lastly please create an environmental variable `OPENWEATHERMAP_ID` with your API key.
+
+### OpenSSL
+
+If you encounter an OpenSSL error on `Linux` follow
+this [guide](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/how-to-configure-openssl-linux?pivots=programming-language-csharp).
