@@ -87,3 +87,8 @@ For this code to work please create an environmental variable called `AZURE_TTS_
 ### OpenWeatherMap
 
 Lastly please create an environmental variable `OPENWEATHERMAP_ID` with your API key.
+
+### OpenSSL
+
+If you encounter an OpenSSL error on `Linux` follow
+this [guide](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/how-to-configure-openssl-linux?pivots=programming-language-csharp).
