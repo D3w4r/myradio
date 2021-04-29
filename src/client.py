@@ -23,6 +23,8 @@ class Client:
 
         print('ACTIVE DEVICES:')
         devices = self.spotifyObject.devices()
+        if not devices:
+            raise RuntimeError('No active devices available')
         for device in devices['devices']:
             print(device['name'])
         return devices

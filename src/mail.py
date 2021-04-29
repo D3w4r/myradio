@@ -80,6 +80,11 @@ class Gmail:
                     "date": date
                 }
             )
+        # If the file does not exist
+        if not os.path.exists('data/repository.json'):
+            f = open('data/repository.json', 'w')
+            f.close()
+        # If the file is empty
         if os.stat('data/repository.json').st_size == 0:
             with open('data/repository.json', 'w', encoding='utf-8') as file:
                 json.dump(ret, file, ensure_ascii=False)
@@ -89,5 +94,5 @@ class Gmail:
 # TESTS
 if __name__ == "__main__":
     gmail = Gmail()
-    for item in gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL']):
+    for item in gmail.get_emails(how_many=5, by_labels=['UNREAD']):
         pprint(item)
