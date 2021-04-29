@@ -1,5 +1,5 @@
 import threading
-import sys
+
 from myradio.src.client import Client
 
 
