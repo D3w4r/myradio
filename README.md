@@ -74,6 +74,8 @@ for your Spotify Web Application. The `SPOTIFY_REDIRECT_URI` is `http://localhos
 
 > You can find your API keys at [this link](https://developer.spotify.com/dashboard/applications).
 
+In ``main.py`` `line 45`, please change the argument of `Client()` to your username. 
+
 ### Gmail API
 
 For this part you will be needing the `credentails.json` file to be copied into `src/auth`. After that, please authorize
