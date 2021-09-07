@@ -30,6 +30,12 @@ class Gmail:
                 pickle.dump(self.credentials, token)
 
     def get_emails(self, how_many: int, by_labels: list):
+        """
+        Get emails
+        :param how_many: how manyu you want to get.
+        :param by_labels: by what labels - e.g. UNREAD
+        :return: dictionary of emails
+        """
         # Connect to Gmail API
         service = build('gmail', 'v1', credentials=self.credentials)
 
@@ -74,13 +80,19 @@ class Gmail:
                     "date": date
                 }
             )
-        with open('repository.txt', 'w', encoding='utf-8') as file:
-            json.dump(ret, file, ensure_ascii=False)
+        # If the file does not exist
+        if not os.path.exists('data/repository.json'):
+            f = open('data/repository.json', 'w')
+            f.close()
+        # If the file is empty
+        if os.stat('data/repository.json').st_size == 0:
+            with open('data/repository.json', 'w', encoding='utf-8') as file:
+                json.dump(ret, file, ensure_ascii=False)
         return ret
 
 
 # TESTS
 if __name__ == "__main__":
     gmail = Gmail()
-    for item in gmail.get_emails(how_many=5, by_labels=['UNREAD', 'CATEGORY_PERSONAL']):
+    for item in gmail.get_emails(how_many=5, by_labels=['UNREAD']):
         pprint(item)
