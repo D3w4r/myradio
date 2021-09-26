@@ -7,8 +7,8 @@ import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
-from myradio.src.mail import Gmail
-from myradio.src.rss import Feed
+from mail import Gmail
+from rss import Feed
 
 logging.basicConfig(level=logging.INFO)
 
