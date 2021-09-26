@@ -34,11 +34,19 @@ class Speech:
         self.setup = False
 
     def generate_text_hello(self):
-        print('Hello TTS!')
+        print('Generating hello message')
+        today = self.getCurrentDate()
+        current_time = self.getCurrentTime()
+        return "Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."
+
+    def getCurrentDate(self):
         today = date.today().strftime("%Y.%m.%d.")
+        return today
+
+    def getCurrentTime(self):
         now = datetime.now()
         current_time = now.strftime("%H:%M")
-        return "Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."
+        return current_time
 
     def generate_text_weather(self, data):
         print('Generating text for weather...')
@@ -106,12 +114,12 @@ class Speech:
 if __name__ == "__main__":
     speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
-    gmail = Gmail()
+    # gmail = Gmail()
 
     text = [
         speech.generate_text_hello()
     ]
     text = text + speech.generate_text_news('https://telex.hu/rss', how_many=1)
-    for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
-        text.append(i)
+    # for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
+    #     text.append(i)
     speech.synthesize(text)
