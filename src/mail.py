@@ -2,12 +2,14 @@ import datetime
 import json
 import os
 import pickle
+import logging
 from pprint import pprint
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+logging.basicConfig(level=logging.INFO)
 
 class Gmail:
     SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
