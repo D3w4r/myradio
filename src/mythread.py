@@ -1,7 +1,7 @@
 import threading
 import logging
 
-from client import Client
+from spotipy_client import Client
 
 logging.basicConfig(level=logging.INFO)
 
@@ -82,3 +82,5 @@ class MusicThread(threading.Thread):
 
     def getFlag(self):
         return self.flag
+
+

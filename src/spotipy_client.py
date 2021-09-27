@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import spotipy
 import logging
 from spotipy.oauth2 import SpotifyOAuth
@@ -143,3 +145,11 @@ class Client:
         Pauses playback
         """
         self.spotifyObject.pause_playback(self.device)
+
+
+if __name__ == "__main__":
+    client = Client('dewarhun')
+
+    search = client.search('BBC minute', 1, 0, 'show')
+    pprint(search)
+

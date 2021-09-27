@@ -5,7 +5,7 @@ import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
 from weather import Weather
-from client import Client
+from spotipy_client import Client
 from mail import Gmail
 from mythread import MusicThread
 from speech import Speech

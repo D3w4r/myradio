@@ -1,0 +1,24 @@
+{
+  "rss": {
+    "source": "https://telex.hu/rss",
+    "how_many": 1,
+    "category": [
+      "belfold",
+      "gazdasag",
+      "kulfold",
+      "kult",
+      "tech"
+    ]
+  },
+  "speech": {
+    "resource": "azure"
+  },
+  "spotify": {
+    "username": "dewarhun"
+  },
+  "mail": {
+    "by_labels": [
+      "UNREAD"
+    ]
+  }
+}
