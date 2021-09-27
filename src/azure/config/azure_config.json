@@ -1,0 +1,7 @@
+{
+  "speech_config": {
+    "region": "westeurope",
+    "language": "hu-HU",
+    "voice": "hu-HU-NoemiNeural"
+  }
+}

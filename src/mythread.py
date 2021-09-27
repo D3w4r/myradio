@@ -1,9 +1,10 @@
 import threading
 import logging
 
-from spotipy_client import Client
+from myradio.src.spotify.spotipy_client import Client
 
 logging.basicConfig(level=logging.INFO)
+
 
 def info(subject):
     print(subject['name'])
@@ -82,5 +83,3 @@ class MusicThread(threading.Thread):
 
     def getFlag(self):
         return self.flag
-
-

@@ -7,8 +7,8 @@ import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
-from mail import Gmail
-from rss import Feed
+from myradio.src.dataprovider.mail import Gmail
+from myradio.src.dataprovider.rss import Feed
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,7 +68,7 @@ class Speech:
 
     def generate_text_news(self, url, how_many: int):
         logging.info('Generating text from RSS feed')
-        with open('data/headings.json', 'r') as file:
+        with open('../basicconfig/headings.json', 'r') as file:
             headings = json.load(file)
         feed = Feed(url, heading=headings)
         data = feed.titles(howmany=how_many)
@@ -84,14 +84,14 @@ class Speech:
         text = [
             "A következő üzenetei érkeztek. "
         ]
-        with open('data/repository.json', mode='r', encoding='utf-8') as file:
+        with open('../basicconfig/repository.json', mode='r', encoding='utf-8') as file:
             dict_elem = json.load(file)
             for item in data[:]:
                 if item in dict_elem:
                     data.remove(item)
                 else:
                     dict_elem.append(item)
-        with open('data/repository.json', 'w', encoding='utf-8') as file:
+        with open('../basicconfig/repository.json', 'w', encoding='utf-8') as file:
             json.dump(dict_elem, file, ensure_ascii=False)
         logging.debug(f"New messages: {data}")
         if len(data) == 0:

@@ -4,11 +4,9 @@ import os
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from weather import Weather
-from spotipy_client import Client
-from mail import Gmail
-from mythread import MusicThread
-from speech import Speech
+from myradio.src.dataprovider.weather import Weather
+from myradio.src.spotify.spotipy_client import Client
+from myradio.src.azure.azure_speech import Speech
 
 logging.basicConfig(level=logging.INFO)
 
