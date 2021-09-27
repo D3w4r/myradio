@@ -31,17 +31,17 @@ class MusicThread(threading.Thread):
 
     def run(self):
         logging.info(f'Started thread - {self.id} :: {self.name}')
-        # Set devices
         devices = self.client.active_devices()
         self.client.set_primary_device(devices, 0)
-        # Info of current track
+
         current_track = self.client.current_track('v')
         artist = self.client.get_artist(current_track)
         print(artist)
-        # User info
+
         user = self.client.user()
         username = self.client.user()['display_name']
         followers = user['followers']['total']
+
         print()
         print(f'Username: {username}')
         print(f'Followers: {followers}')

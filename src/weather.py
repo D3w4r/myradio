@@ -26,7 +26,7 @@ class Weather:
         Get the location of self.city
         :return: tuple of location coordinates
         """
-        print(f'Getting coordinates for {self.city}')
+        logging.info(f'Getting coordinates for {self.city}')
         geolocator = Nominatim(user_agent='weatherapp')
         return geolocator.geocode(self.city).latitude, geolocator.geocode(self.city).longitude
 
