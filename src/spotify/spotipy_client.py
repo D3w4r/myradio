@@ -32,7 +32,7 @@ class Client:
             logging.error('No active device')
             raise RuntimeError('No active devices available')
         for device in devices['devices']:
-            logging.info(device['name'])
+            logging.debug(device['name'])
         return devices
 
     def set_primary_device(self, devices, idx):

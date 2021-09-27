@@ -52,7 +52,7 @@ class Feed:
 
 if __name__ == "__main__":
     # TESTS #
-    with open('../basicconfig/headings.json', 'r') as file:
+    with open('basicconfig/headings.json', 'r') as file:
         headings = json.load(file)
     feed = Feed('https://telex.hu/rss', heading=headings)
     data = feed.titles(1)

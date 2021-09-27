@@ -18,6 +18,18 @@ def list_languages():
     for i, language in enumerate(sorted(languages)):
         print(f"{language:>10}", end="\n" if i % 5 == 4 else "")
 
+def list_voices(language_code=None):
+    client = tts.TextToSpeechClient()
+    response = client.list_voices(language_code=language_code)
+    voices = sorted(response.voices, key=lambda voice: voice.name)
+
+    print(f" Voices: {len(voices)} ".center(60, "-"))
+    for voice in voices:
+        languages = ", ".join(voice.language_codes)
+        name = voice.name
+        gender = tts.SsmlVoiceGender(voice.ssml_gender).name
+        rate = voice.natural_sample_rate_hertz
+        print(f"{languages:<8} | {name:<24} | {gender:<8} | {rate:,} Hz")
 
 def text_to_wav(voice_name: str, text: str):
     language_code = "-".join(voice_name.split("-")[:2])
@@ -39,6 +51,6 @@ def text_to_wav(voice_name: str, text: str):
 
 
 if __name__ == "__main__":
-    list_languages()
-    text_to_wav("en-AU-Wavenet-A", "What is the temperature in Sydney?")
+    list_voices("hu")
+    # text_to_wav("en-AU-Wavenet-A", "What is the temperature in Sydney?")
 
