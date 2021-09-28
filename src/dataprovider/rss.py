@@ -22,7 +22,7 @@ class Feed:
         elif heading:
             for item in heading:
                 self.feed.append(feedparser.parse(
-                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item['name'] + '%22]%2C%22parentId'
+                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item + '%22]%2C%22parentId'
                                                                                                  '%22%3A['
                                                                                                  '%22null%22]}'))
 
