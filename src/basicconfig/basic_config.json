@@ -13,6 +13,9 @@
   "spotify": {
     "username": "dewarhun"
   },
+  "weather": {
+    "city": "Budapest"
+  },
   "mail": {
     "how_many": 2,
     "by_labels": [

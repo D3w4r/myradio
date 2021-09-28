@@ -26,31 +26,50 @@ def load_config():
                 speechconfig=SpeechConfig(
                     subscription=os.environ.get('AZURE_TTS_ID'),
                     region=config['region']),
-                    language=config['language'],
-                    voice=config['voice'])
+                language=config['language'],
+                voice=config['voice'])
     elif basic_config['speech']['resource'] == 'google':
         with open('google/config/google_config.json') as google_config:
             config = json.load(google_config)
             voice_params = config['voice_params']
             speech = google_speech.Speech(
                 voice_params=tts.VoiceSelectionParams(
-                                name=voice_params['name'],
-                                language_code=voice_params['language_code']),
+                    name=voice_params['name'],
+                    language_code=voice_params['language_code']),
                 audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
-    return speech
+    return speech, basic_config
 
 
-def demo(client: Client):
-
-    weather_app = Weather('Budapest')
-
-    speech = load_config()
-
+def stop_track(client: Client):
     current_track = client.current_track()
     progress_ms = current_track['progress_ms']
     name = current_track['item']['name']
     logging.info(f"Stopping last track: {name}")
     client.pause_playback()
+    return current_track
+
+
+def restart_track(client, track):
+    progress_ms = track['progress_ms']
+    name = track['item']['name']
+
+    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
+    episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
+    client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
+
+    time.sleep(episode['items'][0]['duration_ms'] / 1000)
+
+    logging.info(f"Continuing last track: {name}")
+    uris = [track['item']['uri']]
+    client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
+
+
+def demo(client: Client):
+    speech, basic_config = load_config()
+
+    weather_app = Weather(basic_config['weather']['city'])
+
+    current = stop_track(client)
 
     text = [
         speech.generate_text_hello(),
@@ -60,15 +79,7 @@ def demo(client: Client):
 
     speech.synthesize(text)
 
-    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
-    episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
-    client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
-
-    time.sleep(episode['items'][0]['duration_ms'] / 1000)
-
-    logging.info(f"Continuing last track: {name}")
-    uris = [current_track['item']['uri']]
-    client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
+    restart_track(client, current)
 
 
 def main():

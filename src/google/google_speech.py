@@ -7,6 +7,8 @@ import vlc
 
 import myradio.src.azure.azure_speech
 
+from myradio.src.constants.constats import Constants
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -56,12 +58,12 @@ class Speech(myradio.src.speech.Speech):
         )
 
         filename = f"hu-HU.mp3"
-        with open(os.path.join("D:\Data\ProjectLaboratory\myradio\src\cache", filename), "wb") as out:
+        with open(os.path.join(Constants.CACHE_PATH.value, filename), "wb") as out:
             out.write(response.audio_content)
             logging.info(f'Generated speech saved to "{filename}"')
 
         player = vlc.MediaPlayer()
-        media = vlc.Media('D:\Data\ProjectLaboratory\myradio\src\cache\hu-HU.mp3')
+        media = vlc.Media(Constants.CACHE_PATH.value + '\hu-HU.mp3')
         player.set_media(media)
         player.play()
         time.sleep(1)

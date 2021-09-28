@@ -4,7 +4,7 @@ import spotipy
 import logging
 from spotipy.oauth2 import SpotifyOAuth
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 
 class Client:
@@ -26,8 +26,9 @@ class Client:
         :return: active device ids.
         """
 
-        logging.info('ACTIVE DEVICES:')
+        logging.debug('ACTIVE DEVICES:')
         devices = self.spotifyObject.devices()
+        logging.debug(devices)
         if not devices:
             logging.error('No active device')
             raise RuntimeError('No active devices available')
