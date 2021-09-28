@@ -1,0 +1,79 @@
+import os
+import json
+import logging
+from datetime import datetime, date
+
+from myradio.src.dataprovider.rss import Feed
+
+logging.basicConfig(level=logging.INFO)
+
+
+class Speech:
+
+    def __init__(self, language):
+        self.language = language
+
+    def generate_text_hello(self):
+        logging.info('Generating hello message')
+        today = self.getCurrentDate()
+        current_time = self.getCurrentTime()
+        return "Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."
+
+    def getCurrentDate(self):
+        today = date.today().strftime("%Y.%m.%d.")
+        return today
+
+    def getCurrentTime(self):
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        return current_time
+
+    def generate_text_weather(self, data):
+        logging.info('Generating text for weather...')
+        if self.language == 'en-EN':
+            return "It's currently " + str(data["current"]["temp"]) + " degrees outside. The weather is " + str(
+                data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
+                data["current"]["wind_speed"]) + " km/h."
+
+        if self.language == 'hu-HU':
+            return "Jelenleg " + str(data["current"]["temp"]) + " fok van. Az időjárás " + str(
+                data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
+                data["current"]["wind_speed"]) + " km/h."
+
+    def generate_text_news(self, url, how_many: int):
+        logging.info('Generating text from RSS feed')
+        with open('basicconfig/headings.json', 'r') as file:
+            headings = json.load(file)
+        feed = Feed(url, heading=headings)
+        data = feed.titles(howmany=how_many)
+        source = feed.source()
+        logging.info('From source: ' + source)
+        return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
+        for sentence in data:
+            return_data.append(sentence + ". ")
+        return return_data
+
+    def generate_text_email(self, data: list):
+        logging.info("Generating text from incoming emails")
+        text = [
+            "A következő üzenetei érkeztek. "
+        ]
+        with open('basicconfig/repository.json', mode='r', encoding='utf-8') as file:
+            dict_elem = json.load(file)
+            for item in data[:]:
+                if item in dict_elem:
+                    data.remove(item)
+                else:
+                    dict_elem.append(item)
+        with open('basicconfig/repository.json', 'w', encoding='utf-8') as file:
+            json.dump(dict_elem, file, ensure_ascii=False)
+        logging.debug(f"New messages: {data}")
+        if len(data) == 0:
+            text = ['Nem érkezett új üzenete.']
+        for item in data:
+            text.append(
+                "Érkezett: " + item['date'] + " napon, feladó: " + item['sender'] + ", téma: " + item['subject'] + ". ")
+        return text
+
+    def synthesize(self, text):
+        pass

@@ -1,56 +1,75 @@
+import logging
+import os.path
+import time
+
 import google.cloud.texttospeech as tts
+import vlc
+
+import myradio.src.azure.azure_speech
+
+logging.basicConfig(level=logging.INFO)
 
 
-def unique_languages_from_voices(voices):
-    language_set = set()
-    for voice in voices:
-        for language_code in voice.language_codes:
-            language_set.add(language_code)
-    return language_set
+class Speech(myradio.src.speech.Speech):
 
+    def __init__(self, voice_params: tts.VoiceSelectionParams, audio_config: tts.AudioConfig):
+        super().__init__(voice_params.language_code)
+        self.client = tts.TextToSpeechClient()
+        self.voice_params = voice_params
+        self.audio_config: tts.AudioConfig = audio_config
 
-def list_languages():
-    client = tts.TextToSpeechClient()
-    response = client.list_voices()
-    languages = unique_languages_from_voices(response.voices)
+    def unique_languages_from_voices(self, voices):
+        language_set = set()
+        for voice in voices:
+            for language_code in voice.language_codes:
+                language_set.add(language_code)
+        return language_set
 
-    print(f" Languages: {len(languages)} ".center(60, "-"))
-    for i, language in enumerate(sorted(languages)):
-        print(f"{language:>10}", end="\n" if i % 5 == 4 else "")
+    def list_languages(self):
+        response = self.client.list_voices()
+        languages = self.unique_languages_from_voices(response.voices)
 
-def list_voices(language_code=None):
-    client = tts.TextToSpeechClient()
-    response = client.list_voices(language_code=language_code)
-    voices = sorted(response.voices, key=lambda voice: voice.name)
+        print(f" Languages: {len(languages)} ".center(60, "-"))
+        for i, language in enumerate(sorted(languages)):
+            print(f"{language:>10}", end="\n" if i % 5 == 4 else "")
 
-    print(f" Voices: {len(voices)} ".center(60, "-"))
-    for voice in voices:
-        languages = ", ".join(voice.language_codes)
-        name = voice.name
-        gender = tts.SsmlVoiceGender(voice.ssml_gender).name
-        rate = voice.natural_sample_rate_hertz
-        print(f"{languages:<8} | {name:<24} | {gender:<8} | {rate:,} Hz")
+    def list_voices(self, language_code=None):
+        response = self.client.list_voices(language_code=language_code)
+        voices = sorted(response.voices, key=lambda voice: voice.name)
 
-def text_to_wav(voice_name: str, text: str):
-    language_code = "-".join(voice_name.split("-")[:2])
-    text_input = tts.SynthesisInput(text=text)
-    voice_params = tts.VoiceSelectionParams(
-        language_code=language_code, name=voice_name
-    )
-    audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.LINEAR16)
+        print(f" Voices: {len(voices)} ".center(60, "-"))
+        for voice in voices:
+            languages = ", ".join(voice.language_codes)
+            name = voice.name
+            gender = tts.SsmlVoiceGender(voice.ssml_gender).name
+            rate = voice.natural_sample_rate_hertz
+            print(f"{languages:<8} | {name:<24} | {gender:<8} | {rate:,} Hz")
 
-    client = tts.TextToSpeechClient()
-    response = client.synthesize_speech(
-        input=text_input, voice=voice_params, audio_config=audio_config
-    )
+    def synthesize(self, text):
+        text_input = tts.SynthesisInput(text=' '.join(text))
+        voice_params = self.voice_params
+        audio_config = self.audio_config
+        client = self.client
 
-    filename = f"{language_code}.wav"
-    with open(filename, "wb") as out:
-        out.write(response.audio_content)
-        print(f'Generated speech saved to "{filename}"')
+        response = client.synthesize_speech(
+            input=text_input, voice=voice_params, audio_config=audio_config
+        )
+
+        filename = f"hu-HU.mp3"
+        with open(os.path.join("D:\Data\ProjectLaboratory\myradio\src\cache", filename), "wb") as out:
+            out.write(response.audio_content)
+            logging.info(f'Generated speech saved to "{filename}"')
+
+        player = vlc.MediaPlayer()
+        media = vlc.Media('D:\Data\ProjectLaboratory\myradio\src\cache\hu-HU.mp3')
+        player.set_media(media)
+        player.play()
+        time.sleep(1)
+        time.sleep(player.get_length() / 1000)
 
 
 if __name__ == "__main__":
-    list_voices("hu")
-    # text_to_wav("en-AU-Wavenet-A", "What is the temperature in Sydney?")
+    speech = Speech(voice_params=tts.VoiceSelectionParams(name="hu-HU-Wavenet-A", language_code='hu-HU'),
+                    audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
 
+    speech.synthesize(text=["Milyen nap van ma? Ez egy teszt"])

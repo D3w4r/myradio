@@ -31,8 +31,6 @@ class Client:
         if not devices:
             logging.error('No active device')
             raise RuntimeError('No active devices available')
-        for device in devices['devices']:
-            logging.debug(device['name'])
         return devices
 
     def set_primary_device(self, devices, idx):
@@ -149,7 +147,9 @@ class Client:
 
 if __name__ == "__main__":
     client = Client('dewarhun')
+    client.set_primary_device(client.active_devices(), 0)
 
-    search = client.search('BBC minute', 1, 0, 'show')
-    pprint(search)
+    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
+    episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
+    client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
 

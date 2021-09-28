@@ -4,19 +4,17 @@
     "how_many": 1,
     "category": [
       "belfold",
-      "gazdasag",
-      "kulfold",
-      "kult",
       "tech"
     ]
   },
   "speech": {
-    "resource": "azure"
+    "resource": "google"
   },
   "spotify": {
     "username": "dewarhun"
   },
   "mail": {
+    "how_many": 2,
     "by_labels": [
       "UNREAD"
     ]
