@@ -47,7 +47,7 @@ class Feed:
         """
         :return: the source of the rss feed
         """
-        logging.info('Getting RSS sources...')
+        logging.info('Getting RSS sources')
         href = self.feed[0]['href']
         return href.split('/')[2]
 

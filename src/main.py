@@ -42,7 +42,6 @@ def load_config():
 
 def stop_track(client: Client):
     current_track = client.current_track()
-    progress_ms = current_track['progress_ms']
     name = current_track['item']['name']
     logging.info(f"Stopping last track: {name}")
     client.pause_playback()
@@ -75,7 +74,7 @@ def demo(client: Client):
         speech.generate_text_hello(),
         speech.generate_text_weather(weather_app.weather_info())
     ]
-    text += speech.generate_text_news('https://telex.hu/rss', how_many=2)
+    text += speech.generate_text_news()
 
     speech.synthesize(text)
 

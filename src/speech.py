@@ -12,6 +12,8 @@ class Speech:
 
     def __init__(self, language):
         self.language = language
+        with open('basicconfig/basic_config.json') as config:
+            self.config = json.load(config)
 
     def generate_text_hello(self):
         logging.info('Generating hello message')
@@ -31,21 +33,19 @@ class Speech:
     def generate_text_weather(self, data):
         logging.info('Generating text for weather...')
         if self.language == 'en-EN':
-            return "It's currently " + str(data["current"]["temp"]) + " degrees outside. The weather is " + str(
+            return "It's currently " + str(round(data["current"]["temp"])) + " degrees outside. The weather is " + str(
                 data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
-                data["current"]["wind_speed"]) + " km/h."
+                round(data["current"]["wind_speed"])) + " km/h."
 
         if self.language == 'hu-HU':
-            return "Jelenleg " + str(data["current"]["temp"]) + " fok van. Az időjárás " + str(
+            return "Jelenleg " + str(round(data["current"]["temp"])) + " fok van. Az időjárás " + str(
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
-                data["current"]["wind_speed"]) + " km/h."
+                round(data["current"]["wind_speed"])) + " km/h."
 
-    def generate_text_news(self, url, how_many: int):
+    def generate_text_news(self):
         logging.info('Generating text from RSS feed')
-        with open('basicconfig/headings.json', 'r') as file:
-            headings = json.load(file)
-        feed = Feed(url, heading=headings)
-        data = feed.titles(howmany=how_many)
+        feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
+        data = feed.titles(howmany=self.config['news']['how_many'])
         source = feed.source()
         logging.info('From source: ' + source)
         return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
