@@ -1,8 +1,10 @@
+from pprint import pprint
+
 import spotipy
 import logging
 from spotipy.oauth2 import SpotifyOAuth
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 
 class Client:
@@ -24,13 +26,12 @@ class Client:
         :return: active device ids.
         """
 
-        logging.info('ACTIVE DEVICES:')
+        logging.debug('ACTIVE DEVICES:')
         devices = self.spotifyObject.devices()
+        logging.debug(devices)
         if not devices:
             logging.error('No active device')
             raise RuntimeError('No active devices available')
-        for device in devices['devices']:
-            logging.info(device['name'])
         return devices
 
     def set_primary_device(self, devices, idx):
@@ -143,3 +144,13 @@ class Client:
         Pauses playback
         """
         self.spotifyObject.pause_playback(self.device)
+
+
+if __name__ == "__main__":
+    client = Client('dewarhun')
+    client.set_primary_device(client.active_devices(), 0)
+
+    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
+    episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
+    client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
+

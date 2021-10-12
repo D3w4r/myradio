@@ -1,6 +1,6 @@
 # MyRadio
 
-This project is for Project Laboratory (VITMAL01) on BME 6th semester.
+This project is for Project Laboratory (VITMAL01) on BME 6th semester, which was carried on to be a demonstrator app for my thesis in the 7th semester.
 
 ***
 

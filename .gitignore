@@ -127,8 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/src/.cache-dewarhun
+/src/cache/.cache-dewarhun
 /logs/losg.txt
 /logs/logs.txt
+<<<<<<< HEAD
+
+/src/secrets/
+/src/cache/
+=======
 /src/auth/
 /src/data/repository.json
+>>>>>>> dev

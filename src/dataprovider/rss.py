@@ -4,6 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Feed:
     """Class for getting RSS feed from desired URL"""
 
@@ -21,8 +22,9 @@ class Feed:
         elif heading:
             for item in heading:
                 self.feed.append(feedparser.parse(
-                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item[
-                        'name'] + '%22]%2C%22parentId%22%3A[%22null%22]}'))
+                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item + '%22]%2C%22parentId'
+                                                                                                 '%22%3A['
+                                                                                                 '%22null%22]}'))
 
     def titles(self, howmany: int = None):
         """
@@ -45,14 +47,14 @@ class Feed:
         """
         :return: the source of the rss feed
         """
-        logging.info('Getting RSS sources...')
+        logging.info('Getting RSS sources')
         href = self.feed[0]['href']
         return href.split('/')[2]
 
 
 if __name__ == "__main__":
     # TESTS #
-    with open('data/headings.json', 'r') as file:
+    with open('basicconfig/headings.json', 'r') as file:
         headings = json.load(file)
     feed = Feed('https://telex.hu/rss', heading=headings)
     data = feed.titles(1)

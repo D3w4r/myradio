@@ -1,0 +1,25 @@
+{
+  "news": {
+    "source": "https://telex.hu/rss",
+    "how_many": 1,
+    "category": [
+      "belfold",
+      "tech"
+    ]
+  },
+  "speech": {
+    "resource": "google"
+  },
+  "spotify": {
+    "username": "dewarhun"
+  },
+  "weather": {
+    "city": "Budapest"
+  },
+  "mail": {
+    "how_many": 2,
+    "by_labels": [
+      "UNREAD"
+    ]
+  }
+}
