@@ -7,11 +7,11 @@ import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 import google.cloud.texttospeech as tts
 
-from myradio.src.azure import azure_speech
-from myradio.src.dataprovider.mail import Gmail
-from myradio.src.dataprovider.weather import Weather
-from myradio.src.google import google_speech
-from myradio.src.spotify.spotipy_client import Client
+from src.azure import azure_speech
+from src.dataprovider.mail import Gmail
+from src.dataprovider.weather import Weather
+from src.google import google_speech
+from src.spotify.spotipy_client import Client
 
 logging.basicConfig(level=logging.INFO)
 
