@@ -116,7 +116,8 @@ class Speech:
 
 # TESTS #
 if __name__ == "__main__":
-    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
+    print(f"AZURE_TTS_ID {os.environ.get('AZURE_TTS_ID')}")
+    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='northeurope'),
                     language='hu-HU', voice='hu-HU-NoemiNeural')
     gmail = Gmail()
 
