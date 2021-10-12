@@ -1,19 +1,22 @@
+import logging
 import os
 
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from myradio.src import weather
-from myradio.src.client import Client
-from myradio.src.mail import Gmail
-from myradio.src.mythread import MusicThread
-from myradio.src.speech import Speech
+from weather import Weather
+from client import Client
+from mail import Gmail
+from mythread import MusicThread
+from speech import Speech
+
+logging.basicConfig(level=logging.INFO)
 
 
 def speak(client: Client, thread: MusicThread):
     if thread.getFlag():
         # Weather
-        weather_app = weather.Weather('Budapest')
+        weather_app = Weather('Budapest')
         # Speech
         speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
                         language='hu-HU', voice='hu-HU-NoemiNeural')
@@ -23,7 +26,7 @@ def speak(client: Client, thread: MusicThread):
         current_track = client.current_track()
         progress_ms = current_track['progress_ms']
         name = current_track['item']['name']
-        print(f"Stopping last track: {name}")
+        logging.info(f"Stopping last track: {name}")
         client.pause_playback()
         # Synthesise
         text = [
@@ -36,7 +39,7 @@ def speak(client: Client, thread: MusicThread):
             text.append(i)
         speech.synthesize(text)
         # Restart track
-        print(f"Continuing last track: {name}")
+        logging.info(f"Continuing last track: {name}")
         uris = [current_track['item']['uri']]
         client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
 

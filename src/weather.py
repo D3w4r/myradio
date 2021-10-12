@@ -1,8 +1,10 @@
 import json
 import os
-
+import logging
 import requests
 from geopy.geocoders import Nominatim
+
+logging.basicConfig(level=logging.INFO)
 
 
 class Weather:
@@ -32,7 +34,7 @@ class Weather:
         """
         :return: the weather info in json format
         """
-        print('Getting weather info...')
+        logging.info('Getting weather info...')
         location = self.location()
         url = "https://api.openweathermap.org/data/2.5/onecall?lat=%s&lon=%s&appid=%s&units=metric&lang=%s" % (
             location[0], location[1], self.api_key, "hu")

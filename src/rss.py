@@ -1,5 +1,8 @@
 import feedparser
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class Feed:
     """Class for getting RSS feed from desired URL"""
@@ -8,7 +11,8 @@ class Feed:
         """
         This method is specialized for www.telex.hu!
         """
-        print('Initializing RSS feed parser...')
+
+        logging.info('Initializing RSS feed parser...')
         self.feed = []
         if url is None:
             raise RuntimeError('Invalid URL!')
@@ -17,14 +21,15 @@ class Feed:
         elif heading:
             for item in heading:
                 self.feed.append(feedparser.parse(
-                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item['name'] + '%22]%2C%22parentId%22%3A[%22null%22]}'))
+                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item[
+                        'name'] + '%22]%2C%22parentId%22%3A[%22null%22]}'))
 
     def titles(self, howmany: int = None):
         """
         :param howmany: how many you want to get
         :return: titles of feed entries
         """
-        print('Getting entries from RSS feed...')
+        logging.info('Getting entries from RSS feed...')
 
         data = []
         if howmany is None:
@@ -40,7 +45,7 @@ class Feed:
         """
         :return: the source of the rss feed
         """
-        print('Getting RSS sources...')
+        logging.info('Getting RSS sources...')
         href = self.feed[0]['href']
         return href.split('/')[2]
 
@@ -51,4 +56,4 @@ if __name__ == "__main__":
         headings = json.load(file)
     feed = Feed('https://telex.hu/rss', heading=headings)
     data = feed.titles(1)
-    print(data)
+    logging.info(data)

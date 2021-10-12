@@ -1,7 +1,9 @@
 import threading
+import logging
 
-from myradio.src.client import Client
+from client import Client
 
+logging.basicConfig(level=logging.INFO)
 
 def info(subject):
     print(subject['name'])
@@ -28,7 +30,7 @@ class MusicThread(threading.Thread):
         self.flag = False
 
     def run(self):
-        print(f'Started thread - {self.id} :: {self.name}')
+        logging.info(f'Started thread - {self.id} :: {self.name}')
         # Set devices
         devices = self.client.active_devices()
         self.client.set_primary_device(devices, 0)
