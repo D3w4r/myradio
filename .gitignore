@@ -130,6 +130,11 @@ dmypy.json
 /src/cache/.cache-dewarhun
 /logs/losg.txt
 /logs/logs.txt
+<<<<<<< HEAD
 
 /src/secrets/
 /src/cache/
+=======
+/src/auth/
+/src/data/repository.json
+>>>>>>> dev

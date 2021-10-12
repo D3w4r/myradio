@@ -3,7 +3,7 @@ import json
 import logging
 from datetime import datetime, date
 
-from myradio.src.dataprovider.rss import Feed
+from src.dataprovider.rss import Feed
 
 logging.basicConfig(level=logging.INFO)
 
@@ -77,3 +77,4 @@ class Speech:
 
     def synthesize(self, text):
         pass
+

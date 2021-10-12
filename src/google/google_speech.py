@@ -5,14 +5,14 @@ import time
 import google.cloud.texttospeech as tts
 import vlc
 
-import myradio.src.azure.azure_speech
+import src.azure.azure_speech
 
-from myradio.src.constants.constats import Constants
+from src.constants.constats import Constants
 
 logging.basicConfig(level=logging.INFO)
 
 
-class Speech(myradio.src.speech.Speech):
+class Speech(src.speech.Speech):
 
     def __init__(self, voice_params: tts.VoiceSelectionParams, audio_config: tts.AudioConfig):
         super().__init__(voice_params.language_code)

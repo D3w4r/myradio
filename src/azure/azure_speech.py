@@ -5,13 +5,13 @@ import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
-import myradio.src.speech
-from myradio.src.dataprovider.mail import Gmail
+import src.speech
+from src.dataprovider.mail import Gmail
 
 logging.basicConfig(level=logging.INFO)
 
 
-class Speech(myradio.src.speech.Speech):
+class Speech(src.speech.Speech):
     """"Class for generating and synthesising speech"""
 
     def __init__(self, speechconfig: SpeechConfig, voice, language):
