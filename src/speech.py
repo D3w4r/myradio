@@ -17,7 +17,7 @@ class Speech:
         with open('basicconfig/basic_config.json') as config:
             self.config = json.load(config)
 
-    def generate_text_hello(self):
+    def generate_greeting(self):
         logging.info('Generating hello message')
         today = self.getCurrentDate()
         current_time = self.getCurrentTime()
@@ -38,7 +38,6 @@ class Speech:
             return "It's currently " + str(round(data["current"]["temp"])) + " degrees outside. The weather is " + str(
                 data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
                 round(data["current"]["wind_speed"])) + " km/h."
-
         if self.language == 'hu-HU':
             return "Jelenleg " + str(round(data["current"]["temp"])) + " fok van. Az időjárás " + str(
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
@@ -48,8 +47,7 @@ class Speech:
         logging.info('Generating text from RSS feed')
         feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
         news = feed.get_news(howmany=self.config['news']['how_many'])
-        source = feed.source()
-        logging.info('From source: ' + source)
+        logging.info('From source: ' + feed.source())
         return_data = []
         if news:
             for headline in news:
@@ -78,7 +76,7 @@ class Speech:
             text = ['Nem érkezett új üzenete.']
         for item in data:
             text.append(
-                "Érkezett: " + item['date'] + " napon, feladó: " + item['sender'] + ", téma: " + item['subject'] + ". ")
+                " Érkezett: " + item['date'] + ", " + item['sender'] + " feladótól, a témája pedig " + item['subject'] + ".")
         return text
 
     def synthesize(self, text):

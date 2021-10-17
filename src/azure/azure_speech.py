@@ -49,6 +49,6 @@ if __name__ == "__main__":
     gmail = Gmail()
 
     text = [
-        speech.generate_text_hello()
+        speech.generate_greeting()
     ]
     speech.synthesize(text)

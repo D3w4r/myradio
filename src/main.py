@@ -71,6 +71,7 @@ def demo(client: Client):
 
     current = stop_track(client)
 
+    # TODO: idősávok!!!
     text = [
         speech.generate_text_hello(),
         speech.generate_text_weather(weather_app.weather_info())

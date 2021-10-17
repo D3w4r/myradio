@@ -28,7 +28,9 @@ class Feed:
         elif heading:
             for item in heading:
                 self.feed.append(feedparser.parse(
-                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item + '%22]%2C%22parentId%22%3A[%22null%22]}'))
+                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item + '%22]%2C%22parentId'
+                                                                                                 '%22%3A['
+                                                                                                 '%22null%22]}'))
 
     def get_news(self, howmany: int = None):
         """
@@ -45,7 +47,7 @@ class Feed:
         for item in self.feed:
             for i in item['entries'][:howmany]:
                 title_data.append(i['title'])
-        title_data = self.persist(title_data)
+        title_data = self.persist_and_filter(title_data)
         logging.info(title_data)
         return title_data
 
@@ -57,7 +59,7 @@ class Feed:
         href = self.feed[0]['href']
         return href.split('/')[2]
 
-    def persist(self, input: list):
+    def persist_and_filter(self, input: list):
         path = Constants.RSS_REPOSITORY.value
         to_return = []
         if not os.path.exists(path):

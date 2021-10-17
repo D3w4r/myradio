@@ -91,11 +91,9 @@ class Gmail:
         return ret
 
     def persist(self, to_repository, what):
-        # If the file does not exist
         if not os.path.exists(to_repository):
             f = open(to_repository, 'w')
             f.close()
-        # If the file is empty
         if os.stat(to_repository).st_size == 0:
             with open(to_repository, 'w', encoding='utf-8') as file:
                 json.dump(what, file, ensure_ascii=False)
