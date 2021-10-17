@@ -1,8 +1,8 @@
 import datetime
 import json
+import logging
 import os
 import pickle
-import logging
 from pprint import pprint
 
 from google.auth.transport.requests import Request
@@ -18,18 +18,20 @@ class Gmail:
     def __init__(self):
         self.credentials = None
 
-        if os.path.exists('secrets/token.pickle'):
-            with open('secrets/token.pickle', 'rb') as token:
+        token_pickle = '../secrets/token.pickle'
+        credential_json = '../secrets/credentials.json'
+        if os.path.exists(token_pickle):
+            with open(token_pickle, 'rb') as token:
                 self.credentials = pickle.load(token)
         if not self.credentials or not self.credentials.valid:
             if self.credentials and self.credentials.expired and self.credentials.refresh_token:
                 self.credentials.refresh(Request())
             else:
-                self.flow = InstalledAppFlow.from_client_secrets_file('secrets/credentials.json', self.SCOPES)
+                self.flow = InstalledAppFlow.from_client_secrets_file(credential_json, self.SCOPES)
                 self.credentials = self.flow.run_local_server(port=9090)
 
             # Save access token
-            with open('secrets/token.pickle', 'wb') as token:
+            with open(token_pickle, 'wb') as token:
                 pickle.dump(self.credentials, token)
 
     def get_emails(self, how_many: int, by_labels: list):
@@ -83,15 +85,19 @@ class Gmail:
                     "date": date
                 }
             )
+        repo = '../basicconfig/repository.json'
+        self.persist(repo, ret)
+        return ret
+
+    def persist(self, to_repository, what):
         # If the file does not exist
-        if not os.path.exists('basicconfig/repository.json'):
-            f = open('basicconfig/repository.json', 'w')
+        if not os.path.exists(to_repository):
+            f = open(to_repository, 'w')
             f.close()
         # If the file is empty
-        if os.stat('basicconfig/repository.json').st_size == 0:
-            with open('basicconfig/repository.json', 'w', encoding='utf-8') as file:
-                json.dump(ret, file, ensure_ascii=False)
-        return ret
+        if os.stat(to_repository).st_size == 0:
+            with open(to_repository, 'w', encoding='utf-8') as file:
+                json.dump(what, file, ensure_ascii=False)
 
 
 # TESTS

@@ -1,4 +1,3 @@
-import os
 import json
 import logging
 from datetime import datetime, date
@@ -9,6 +8,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Speech:
+    """
+    General class for speech synthesising.
+    """
 
     def __init__(self, language):
         self.language = language
@@ -45,7 +47,7 @@ class Speech:
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')
         feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
-        data = feed.titles(howmany=self.config['news']['how_many'])
+        data = feed.get_titles(howmany=self.config['news']['how_many'])
         source = feed.source()
         logging.info('From source: ' + source)
         return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
@@ -55,17 +57,18 @@ class Speech:
 
     def generate_text_email(self, data: list):
         logging.info("Generating text from incoming emails")
+        repository = 'basicconfig/repository.json'
         text = [
             "A következő üzenetei érkeztek. "
         ]
-        with open('basicconfig/repository.json', mode='r', encoding='utf-8') as file:
+        with open(repository, mode='r', encoding='utf-8') as file:
             dict_elem = json.load(file)
             for item in data[:]:
                 if item in dict_elem:
                     data.remove(item)
                 else:
                     dict_elem.append(item)
-        with open('basicconfig/repository.json', 'w', encoding='utf-8') as file:
+        with open(repository, 'w', encoding='utf-8') as file:
             json.dump(dict_elem, file, ensure_ascii=False)
         logging.debug(f"New messages: {data}")
         if len(data) == 0:
