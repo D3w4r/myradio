@@ -50,9 +50,12 @@ class Speech:
         data = feed.get_news(howmany=self.config['news']['how_many'])
         source = feed.source()
         logging.info('From source: ' + source)
-        return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
-        for sentence in data:
-            return_data.append(sentence + ". ")
+        return_data = []
+        if data:
+            for sentence in data:
+                return_data.append(sentence + ". ")
+        else:
+            return_data = ['Egyelőre nem történt új hír értékű esemény.']
         return return_data
 
     def generate_text_email(self, data: list):

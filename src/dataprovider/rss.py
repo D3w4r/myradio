@@ -28,17 +28,14 @@ class Feed:
         elif heading:
             for item in heading:
                 self.feed.append(feedparser.parse(
-                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item[
-                        'name'] + '%22]%2C%22parentId'
-                                  '%22%3A['
-                                  '%22null%22]}'))
+                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item + '%22]%2C%22parentId%22%3A[%22null%22]}'))
 
     def get_news(self, howmany: int = None):
         """
         :param howmany: how many you want to get
         :return: titles of feed entries
         """
-        logging.info('Getting entries from RSS feed...')
+        logging.debug('Getting entries from RSS feed...')
 
         title_data = []
         if howmany is None:
