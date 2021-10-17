@@ -46,6 +46,7 @@ class Feed:
             for i in item['entries'][:howmany]:
                 title_data.append(i['title'])
         title_data = self.persist(title_data)
+        logging.info(title_data)
         return title_data
 
     def source(self):
@@ -62,17 +63,23 @@ class Feed:
         if not os.path.exists(path):
             f = open(path, 'w')
             f.close()
-        input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
-        with open(path, 'rb') as file:
-            if os.stat(path).st_size != 0:
-                persisted: list = pickle.load(file)
-                for input_item in input:
-                    if input_item not in persisted:
-                        to_return.append(input_item)
-                        persisted.append(input_item)
-                        logging.debug('Appended ' + str(input_item) + ' to list')
-        with open(path, 'wb') as file:
-            pickle.dump(input, file)
+        if os.stat(path).st_size != 0:
+            with open(path, 'rb') as file:
+                news_store: list = pickle.load(file)
+            logging.info('Persisted news store found')
+            input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
+            for input_item in input:
+                if input_item not in news_store:
+                    news_store.append(input_item)
+                    with open(path, 'wb') as out:
+                        pickle.dump(news_store, out)
+                    to_return.append(input_item)
+                    logging.info('Appended ' + str(input_item) + ' to return list')
+        else:
+            logging.info('No persisted news found')
+            with open(path, 'wb') as file:
+                pickle.dump(input, file)
+            to_return = input
         return to_return
 
 

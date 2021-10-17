@@ -47,13 +47,13 @@ class Speech:
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')
         feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
-        data = feed.get_news(howmany=self.config['news']['how_many'])
+        news = feed.get_news(howmany=self.config['news']['how_many'])
         source = feed.source()
         logging.info('From source: ' + source)
         return_data = []
-        if data:
-            for sentence in data:
-                return_data.append(sentence + ". ")
+        if news:
+            for headline in news:
+                return_data.append(headline + ". ")
         else:
             return_data = ['Egyelőre nem történt új hír értékű esemény.']
         return return_data

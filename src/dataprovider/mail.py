@@ -18,20 +18,22 @@ class Gmail:
     def __init__(self):
         self.credentials = None
 
-        token_pickle = '../secrets/token.pickle'
-        credential_json = '../secrets/credentials.json'
-        if os.path.exists(token_pickle):
-            with open(token_pickle, 'rb') as token:
+        secret = os.environ.get('SECRET_DATA_DIR')
+        self.token_pickle = secret + '/token.pickle'
+        self.credential_json = secret + '/credentials.json'
+        self.repository = secret + '/repository.json'
+        if os.path.exists(self.token_pickle):
+            with open(self.token_pickle, 'rb') as token:
                 self.credentials = pickle.load(token)
         if not self.credentials or not self.credentials.valid:
             if self.credentials and self.credentials.expired and self.credentials.refresh_token:
                 self.credentials.refresh(Request())
             else:
-                self.flow = InstalledAppFlow.from_client_secrets_file(credential_json, self.SCOPES)
+                self.flow = InstalledAppFlow.from_client_secrets_file(self.credential_json, self.SCOPES)
                 self.credentials = self.flow.run_local_server(port=9090)
 
             # Save access token
-            with open(token_pickle, 'wb') as token:
+            with open(self.token_pickle, 'wb') as token:
                 pickle.dump(self.credentials, token)
 
     def get_emails(self, how_many: int, by_labels: list):
@@ -85,8 +87,7 @@ class Gmail:
                     "date": date
                 }
             )
-        repo = '../basicconfig/repository.json'
-        self.persist(repo, ret)
+        self.persist(self.repository, ret)
         return ret
 
     def persist(self, to_repository, what):

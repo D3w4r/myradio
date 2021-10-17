@@ -67,6 +67,7 @@ def demo(client: Client):
     speech, basic_config = load_config()
 
     weather_app = Weather(basic_config['weather']['city'])
+    gmail = Gmail()
 
     current = stop_track(client)
 
@@ -74,6 +75,7 @@ def demo(client: Client):
         speech.generate_text_hello(),
         speech.generate_text_weather(weather_app.weather_info())
     ]
+    text += speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD']))
     text += speech.generate_text_news()
 
     speech.synthesize(text)
