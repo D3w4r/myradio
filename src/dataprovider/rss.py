@@ -33,7 +33,7 @@ class Feed:
                                   '%22%3A['
                                   '%22null%22]}'))
 
-    def get_titles(self, howmany: int = None):
+    def get_news(self, howmany: int = None):
         """
         :param howmany: how many you want to get
         :return: titles of feed entries
@@ -48,7 +48,7 @@ class Feed:
         for item in self.feed:
             for i in item['entries'][:howmany]:
                 title_data.append(i['title'])
-        self.persist(title_data)
+        title_data = self.persist(title_data)
         return title_data
 
     def source(self):
@@ -61,6 +61,7 @@ class Feed:
 
     def persist(self, input: list):
         path = Constants.RSS_REPOSITORY.value
+        to_return = []
         if not os.path.exists(path):
             f = open(path, 'w')
             f.close()
@@ -70,10 +71,12 @@ class Feed:
                 persisted: list = pickle.load(file)
                 for input_item in input:
                     if input_item not in persisted:
+                        to_return.append(input_item)
                         persisted.append(input_item)
                         logging.debug('Appended ' + str(input_item) + ' to list')
         with open(path, 'wb') as file:
             pickle.dump(input, file)
+        return to_return
 
 
 if __name__ == "__main__":
@@ -81,5 +84,5 @@ if __name__ == "__main__":
     with open(Constants.INTERESTS.value, 'r') as file:
         headings = json.load(file)
     feed = Feed('https://telex.hu/rss', heading=headings)
-    data = feed.get_titles(1)
+    data = feed.get_news(1)
     logging.info(data)

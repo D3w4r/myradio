@@ -47,7 +47,7 @@ class Speech:
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')
         feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
-        data = feed.get_titles(howmany=self.config['news']['how_many'])
+        data = feed.get_news(howmany=self.config['news']['how_many'])
         source = feed.source()
         logging.info('From source: ' + source)
         return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
