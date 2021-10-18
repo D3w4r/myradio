@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import date, datetime
 
 from src.constants.constats import Time
@@ -29,8 +30,8 @@ class Scheduler:
             return_text += speech_client.generate_text_news()
         elif part_of_day == Time.LUNCH:
             return_text += speech_client.generate_greeting()
+            return_text += speech_client.generate_text_weather()
             return_text += speech_client.generate_text_email()
-            # TODO: openweather for the afternoon
             pass
         else:
             return_text += speech_client.generate_greeting()

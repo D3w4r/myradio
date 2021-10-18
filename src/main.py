@@ -61,8 +61,8 @@ def demo(client: Client):
     client.pause_playback()
 
     text = []
-    text += speech.generate_greeting()
-    # text += speech.generate_text_weather()
+    text += speech.generate_morning_greeting()
+    text += speech.generate_text_weather()
     text += speech.generate_text_email()
     text += speech.generate_text_news()
 

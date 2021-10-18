@@ -46,8 +46,8 @@ class Speech:
         logging.info('Generating text for weather...')
         weather = Weather(self.config['weather']['city'])
         data = weather.weather_info()
-        return ["Jelenleg " + str(round(data["current"]["temp"])) + " fok van." + " A szél ma várhatóan " + str(
-            round(data["current"]["wind_speed"])) + " km/h sebességgel fog fújni."]
+        return ["Jelenleg " + str(round(data["main"]["temp"])) + " fok van." + " A szél ma várhatóan " + str(
+            round(data["wind"]["speed"])) + " km/h sebességgel fog fújni."]
 
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')
