@@ -66,10 +66,10 @@ class Feed:
             f = open(path, 'w')
             f.close()
         if os.stat(path).st_size != 0:
+            input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
             with open(path, 'rb') as file:
                 news_store: list = pickle.load(file)
             logging.info('Persisted news store found')
-            input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
             for input_item in input:
                 if input_item not in news_store:
                     news_store.append(input_item)
@@ -79,9 +79,10 @@ class Feed:
                     logging.info('Appended ' + str(input_item) + ' to return list')
         else:
             logging.info('No persisted news found')
+            to_return = input
+            input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
             with open(path, 'wb') as file:
                 pickle.dump(input, file)
-            to_return = input
         return to_return
 
 

@@ -16,9 +16,9 @@ class Speech:
 
     def __init__(self, language):
         self.language = language
-        with open('basicconfig/basic_config.json') as config:
+        with open('basicconfig/basic_config.json', mode='r', encoding='utf-8') as config:
             self.config = json.load(config)
-        self.weather_app = Weather(config['weather']['city'])
+        self.weather_app = Weather(self.config['weather']['city'])
         self.gmail_app = Gmail()
 
     def get_current_time_str(self):

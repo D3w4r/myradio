@@ -8,7 +8,6 @@ import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
 from src.azure import azure_speech
-from src.dataprovider.mail import Gmail
 from src.google import google_speech
 from src.spotify.spotipy_client import Client
 
@@ -47,16 +46,16 @@ def stop_track(client: Client):
     return stopped_track
 
 
-def bbc_minute(client, track):
+def bbc_minute(client):
     bbc_minute = client.search("BBC Minute", 1, 0, 'show')
     podcast = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
     client.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']])
 
-    restart_playback(client, podcast, track)
+    restart_playback(client)
 
 
-def restart_playback(client, podcast, track):
-    time.sleep(podcast['items'][0]['duration_ms'] / 1000)
+def restart_playback(client):
+    time.sleep(60)
 
     client.restart_playback()
 

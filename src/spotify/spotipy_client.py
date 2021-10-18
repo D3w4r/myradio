@@ -130,9 +130,9 @@ class Client:
                                           position_ms=progress_ms)
 
     def restart_playback(self):
-        uri = self.stopped_track['item']['uri']
+        uri = [self.stopped_track['item']['uri']]
         progress_ms = self.stopped_track['progress_ms']
-        self.spotifyObject.start_playback(device_id=self.device, context_uri=None, uris=uri, offset=None,
+        self.spotifyObject.start_playback(device_id=self.device, uris=uri, offset=None,
                                           position_ms=progress_ms)
 
     def select_song(self, from_tracks):
@@ -150,7 +150,7 @@ class Client:
         """
         Pauses playback and returns stopped track
         """
-        stopped_track = self.stopped_track()
+        stopped_track = self.current_track()
         name = stopped_track['item']['name']
         self.spotifyObject.pause_playback(self.device)
         logging.info(f"Stopping last track: {name}")
