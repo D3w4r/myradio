@@ -1,8 +1,9 @@
 import json
 import logging
-from datetime import datetime, date
+from src.dataprovider.scheduler import Scheduler
 
 from src.dataprovider.rss import Feed
+from src.dataprovider.weather import Weather
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,32 +17,26 @@ class Speech:
         self.language = language
         with open('basicconfig/basic_config.json') as config:
             self.config = json.load(config)
+        self.weather_app = Weather(config['weather']['city'])
 
     def generate_greeting(self):
         logging.info('Generating hello message')
-        today = self.getCurrentDate()
-        current_time = self.getCurrentTime()
-        return "Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."
+        today = Scheduler.get_current_date_str()
+        current_time = Scheduler.get_current_time_str()
+        return ["Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."]
 
-    def getCurrentDate(self):
-        today = date.today().strftime("%Y.%m.%d.")
-        return today
-
-    def getCurrentTime(self):
-        now = datetime.now()
-        current_time = now.strftime("%H:%M")
-        return current_time
-
-    def generate_text_weather(self, data):
+    def generate_text_weather(self):
         logging.info('Generating text for weather...')
+        weather = Weather(self.config['weather']['city'])
+        data = weather.weather_info()
         if self.language == 'en-EN':
-            return "It's currently " + str(round(data["current"]["temp"])) + " degrees outside. The weather is " + str(
+            return ["It's currently " + str(round(data["current"]["temp"])) + " degrees outside. The weather is " + str(
                 data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
-                round(data["current"]["wind_speed"])) + " km/h."
+                round(data["current"]["wind_speed"])) + " km/h."]
         if self.language == 'hu-HU':
-            return "Jelenleg " + str(round(data["current"]["temp"])) + " fok van. Az időjárás " + str(
+            return ["Jelenleg " + str(round(data["current"]["temp"])) + " fok van. Az időjárás " + str(
                 data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
-                round(data["current"]["wind_speed"])) + " km/h."
+                round(data["current"]["wind_speed"])) + " km/h."]
 
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')

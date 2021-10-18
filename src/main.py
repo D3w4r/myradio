@@ -3,13 +3,12 @@ import logging
 import os
 import time
 
+import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
-import google.cloud.texttospeech as tts
 
 from src.azure import azure_speech
 from src.dataprovider.mail import Gmail
-from src.dataprovider.weather import Weather
 from src.google import google_speech
 from src.spotify.spotipy_client import Client
 
@@ -48,15 +47,19 @@ def stop_track(client: Client):
     return current_track
 
 
-def restart_track(client, track):
+def bbc_minute(client, track):
+    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
+    podcast = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
+    client.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']])
+
+    restart_playback(client, podcast, track)
+
+
+def restart_playback(client, podcast, track):
     progress_ms = track['progress_ms']
     name = track['item']['name']
 
-    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
-    episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
-    client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
-
-    time.sleep(episode['items'][0]['duration_ms'] / 1000)
+    time.sleep(podcast['items'][0]['duration_ms'] / 1000)
 
     logging.info(f"Continuing last track: {name}")
     uris = [track['item']['uri']]
@@ -66,22 +69,20 @@ def restart_track(client, track):
 def demo(client: Client):
     speech, basic_config = load_config()
 
-    weather_app = Weather(basic_config['weather']['city'])
     gmail = Gmail()
 
     current = stop_track(client)
 
     # TODO: idősávok!!!
-    text = [
-        speech.generate_text_hello(),
-        speech.generate_text_weather(weather_app.weather_info())
-    ]
+    text = []
+    text += speech.generate_greeting()
+    text += speech.generate_text_weather(basic_config)
     text += speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD']))
     text += speech.generate_text_news()
 
     speech.synthesize(text)
 
-    restart_track(client, current)
+    bbc_minute(client, current)
 
 
 def main():

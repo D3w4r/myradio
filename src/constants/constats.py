@@ -5,3 +5,9 @@ class Constants(Enum):
     CACHE_PATH = 'D:/Data/ProjectLaboratory/myradio/src/cache'
     RSS_REPOSITORY = 'D:/Data/ProjectLaboratory/myradio/src/cache/rss_repository.json'
     INTERESTS = 'D:/Data/ProjectLaboratory/myradio/src/basicconfig/interests.json'
+
+class Time(Enum):
+    BREAKFAST = 1
+    LUNCH = 2
+    DINNER = 3
+
