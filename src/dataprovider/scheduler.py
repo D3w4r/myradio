@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 
 import src.spotify.spotipy_client
-from src.constants.constats import Time
+from src.enums.enums import Time
 from src.speech import Speech
 
 logging.basicConfig(level=logging.INFO)

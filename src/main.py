@@ -2,15 +2,14 @@ import json
 import logging
 import os
 
-
 import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
 from src.azure import azure_speech
+from src.dataprovider.scheduler import Scheduler
 from src.google import google_speech
 from src.spotify.spotipy_client import Client
-from src.dataprovider.scheduler import Scheduler
 
 logging.basicConfig(level=logging.INFO)
 

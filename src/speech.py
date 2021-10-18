@@ -32,7 +32,6 @@ class Speech:
 
     def generate_greeting(self):
         logging.info('Generating hello message')
-        today = self.get_current_date_str()
         current_time = self.get_current_time_str()
         return ["Szia! " + current_time + " órai jelentésem következik! "]
 
@@ -52,7 +51,7 @@ class Speech:
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')
         feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
-        news = feed.get_news(howmany=self.config['news']['how_many'])
+        news = feed.get_news_titles(howmany=self.config['news']['how_many'])
         logging.info('From source: ' + feed.source())
         return_data = []
         if news:
@@ -63,7 +62,7 @@ class Speech:
         return return_data
 
     def generate_text_email(self):
-        input: list = self.gmail_app.get_emails(how_many=5, by_labels=['UNREAD'])
+        input: list = self.gmail_app.get_emails_by_labels(how_many=5, by_labels=['UNREAD'])
         logging.info("Generating text from incoming emails")
         repository = 'basicconfig/repository.json'
         text = [

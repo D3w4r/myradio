@@ -6,8 +6,7 @@ import google.cloud.texttospeech as tts
 import vlc
 
 import src.azure.azure_speech
-
-from src.constants.constats import Constants
+from src.enums.enums import Constants
 
 logging.basicConfig(level=logging.INFO)
 

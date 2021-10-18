@@ -1,12 +1,10 @@
 import json
 import logging
-import os.path
-import pickle
-import hashlib
 
 import feedparser
 
-from src.constants.constats import Constants
+import src.persistence.repository
+from src.enums.enums import Constants
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,7 +30,7 @@ class Feed:
                                                                                                  '%22%3A['
                                                                                                  '%22null%22]}'))
 
-    def get_news(self, howmany: int = None):
+    def get_news_titles(self, howmany: int = None):
         """
         :param howmany: how many you want to get
         :return: titles of feed entries
@@ -40,6 +38,7 @@ class Feed:
         logging.debug('Getting entries from RSS feed...')
 
         title_data = []
+
         if howmany is None:
             howmany = 0
             for item in self.feed:
@@ -47,8 +46,10 @@ class Feed:
         for item in self.feed:
             for i in item['entries'][:howmany]:
                 title_data.append(i['title'])
-        title_data = self.persist_and_filter(title_data)
-        logging.info(title_data)
+
+        repo = src.persistence.repository.Repository()
+        title_data = repo.persist_and_filter_list(input_list=title_data,
+                                                  path=Constants.RSS_REPOSITORY.value)
         return title_data
 
     def source(self):
@@ -59,39 +60,11 @@ class Feed:
         href = self.feed[0]['href']
         return href.split('/')[2]
 
-    def persist_and_filter(self, input: list):
-        path = Constants.RSS_REPOSITORY.value
-        to_return = []
-        if not os.path.exists(path):
-            f = open(path, 'w')
-            f.close()
-        if os.stat(path).st_size != 0:
-            with open(path, 'rb') as file:
-                news_store: list = pickle.load(file)
-            logging.info('Persisted news store found')
-            for input_item in input:
-                if self.hash_item(input_item) not in news_store:
-                    news_store.append(self.hash_item(input_item))
-                    to_return.append(input_item)
-                    logging.info('Appended ' + str(input_item) + ' to return list')
-            with open(path, 'wb') as out:
-                pickle.dump(news_store, out)
-        else:
-            logging.info('No persisted news found')
-            to_return = input
-            input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
-            with open(path, 'wb') as file:
-                pickle.dump(input, file)
-        return to_return
-
-    def hash_item(self, item):
-        return hashlib.sha256(str(item).encode('utf-8')).hexdigest()
-
 
 if __name__ == "__main__":
     # TESTS #
     with open(Constants.CONFIG.value, 'r') as file:
         config = json.load(file)
     feed = Feed('https://telex.hu/rss', heading=config['news']['category'])
-    data = feed.get_news(1)
+    data = feed.get_news_titles(1)
     logging.info(data)
