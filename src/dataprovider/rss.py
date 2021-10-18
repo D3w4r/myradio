@@ -66,17 +66,16 @@ class Feed:
             f = open(path, 'w')
             f.close()
         if os.stat(path).st_size != 0:
-            input = list(map(lambda item: hashlib.sha256(str(item).encode('utf-8')).hexdigest(), input))
             with open(path, 'rb') as file:
                 news_store: list = pickle.load(file)
             logging.info('Persisted news store found')
             for input_item in input:
-                if input_item not in news_store:
-                    news_store.append(input_item)
-                    with open(path, 'wb') as out:
-                        pickle.dump(news_store, out)
+                if self.hash_item(input_item) not in news_store:
+                    news_store.append(self.hash_item(input_item))
                     to_return.append(input_item)
                     logging.info('Appended ' + str(input_item) + ' to return list')
+            with open(path, 'wb') as out:
+                pickle.dump(news_store, out)
         else:
             logging.info('No persisted news found')
             to_return = input
@@ -85,11 +84,14 @@ class Feed:
                 pickle.dump(input, file)
         return to_return
 
+    def hash_item(self, item):
+        return hashlib.sha256(str(item).encode('utf-8')).hexdigest()
+
 
 if __name__ == "__main__":
     # TESTS #
-    with open(Constants.INTERESTS.value, 'r') as file:
-        headings = json.load(file)
-    feed = Feed('https://telex.hu/rss', heading=headings)
+    with open(Constants.CONFIG.value, 'r') as file:
+        config = json.load(file)
+    feed = Feed('https://telex.hu/rss', heading=config['news']['category'])
     data = feed.get_news(1)
     logging.info(data)

@@ -51,12 +51,7 @@ def bbc_minute(client):
     podcast = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
     client.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']])
 
-    restart_playback(client)
-
-
-def restart_playback(client):
     time.sleep(60)
-
     client.restart_playback()
 
 
@@ -67,7 +62,7 @@ def demo(client: Client):
 
     text = []
     text += speech.generate_greeting()
-    text += speech.generate_text_weather()
+    # text += speech.generate_text_weather()
     text += speech.generate_text_email()
     text += speech.generate_text_news()
 
