@@ -1,7 +1,7 @@
 import logging
-import os
-from datetime import date, datetime
+from datetime import datetime
 
+import src.spotify.spotipy_client
 from src.constants.constats import Time
 from src.speech import Speech
 
@@ -9,8 +9,6 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Scheduler:
-
-
 
     def get_part_of_day(self):
         now = datetime.now()
@@ -21,24 +19,22 @@ class Scheduler:
         else:
             return Time.DINNER
 
-    def generate_feed(self, speech_client: Speech):
+    def generate_feed(self, speech_client: Speech, spotify_client: src.spotify.spotipy_client.Client):
+        spotify_client.pause_playback()
         part_of_day = self.get_part_of_day()
-        return_text = []
+        text = []
         if part_of_day == Time.BREAKFAST:
-            return_text += speech_client.generate_morning_greeting()
-            return_text += speech_client.generate_text_weather()
-            return_text += speech_client.generate_text_news()
+            text += speech_client.generate_morning_greeting()
+            text += speech_client.generate_text_weather()
+            text += speech_client.generate_text_news()
         elif part_of_day == Time.LUNCH:
-            return_text += speech_client.generate_greeting()
-            return_text += speech_client.generate_text_weather()
-            return_text += speech_client.generate_text_email()
-            pass
+            text += speech_client.generate_greeting()
+            text += speech_client.generate_text_weather()
+            text += speech_client.generate_text_email()
         else:
-            return_text += speech_client.generate_greeting()
-            return_text += speech_client.generate_text_news()
-            # TODO: bbc minute evening
-            pass
-        return return_text
+            text += speech_client.generate_greeting()
+            text += speech_client.generate_text_news()
+        return text
 
 
 if __name__ == "__main__":

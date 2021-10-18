@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-import time
+
 
 import google.cloud.texttospeech as tts
 import multitimer
@@ -10,6 +10,7 @@ from azure.cognitiveservices.speech import SpeechConfig
 from src.azure import azure_speech
 from src.google import google_speech
 from src.spotify.spotipy_client import Client
+from src.dataprovider.scheduler import Scheduler
 
 logging.basicConfig(level=logging.INFO)
 
@@ -38,37 +39,14 @@ def load_config():
     return speech, basic_config
 
 
-def stop_track(client: Client):
-    stopped_track = client.current_track()
-    name = stopped_track['item']['name']
-    logging.info(f"Stopping last track: {name}")
-    client.pause_playback()
-    return stopped_track
-
-
-def bbc_minute(client):
-    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
-    podcast = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
-    client.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']], progress_ms=0)
-
-    time.sleep(60)
-    client.restart_playback()
-
-
-def demo(client: Client):
+def demo(spotify: Client):
     speech, basic_config = load_config()
+    scheduler = Scheduler()
 
-    client.pause_playback()
-
-    text = []
-    text += speech.generate_morning_greeting()
-    text += speech.generate_text_weather()
-    text += speech.generate_text_email()
-    text += speech.generate_text_news()
+    text = scheduler.generate_feed(speech, spotify)
 
     speech.synthesize(text)
-
-    bbc_minute(client)
+    spotify.bbc_minute()
 
 
 def main():

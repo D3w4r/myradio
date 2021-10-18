@@ -1,7 +1,7 @@
-from pprint import pprint
+import logging
+import time
 
 import spotipy
-import logging
 from spotipy.oauth2 import SpotifyOAuth
 
 logging.basicConfig(level=logging.WARNING)
@@ -78,6 +78,14 @@ class Client:
         logging.info(f"Stopping last track: {name}")
         self.current_track = stopped_track
 
+    def bbc_minute(self):
+        query = self.search("BBC Minute", 1, 0, 'show')
+        podcast = self.spotifyObject.show_episodes(show_id=query['shows']['items'][0]['uri'])
+        self.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']], progress_ms=0)
+
+        time.sleep(60)
+        self.restart_playback()
+
 
 if __name__ == "__main__":
     client = Client('dewarhun')
@@ -86,4 +94,3 @@ if __name__ == "__main__":
     bbc_minute = client.search("BBC Minute", 1, 0, 'show')
     episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
     client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
-
