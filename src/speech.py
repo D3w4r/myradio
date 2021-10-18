@@ -1,7 +1,8 @@
 import json
 import logging
-from src.dataprovider.scheduler import Scheduler
+from datetime import datetime, date
 
+from src.dataprovider.mail import Gmail
 from src.dataprovider.rss import Feed
 from src.dataprovider.weather import Weather
 
@@ -18,11 +19,21 @@ class Speech:
         with open('basicconfig/basic_config.json') as config:
             self.config = json.load(config)
         self.weather_app = Weather(config['weather']['city'])
+        self.gmail_app = Gmail()
+
+    def get_current_time_str(self):
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        return current_time
+
+    def get_current_date_str(self):
+        today = date.today().strftime("%Y.%m.%d.")
+        return today
 
     def generate_greeting(self):
         logging.info('Generating hello message')
-        today = Scheduler.get_current_date_str()
-        current_time = Scheduler.get_current_time_str()
+        today = self.get_current_date_str()
+        current_time = self.get_current_time_str()
         return ["Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."]
 
     def generate_text_weather(self):
@@ -51,27 +62,28 @@ class Speech:
             return_data = ['Egyelőre nem történt új hír értékű esemény.']
         return return_data
 
-    def generate_text_email(self, data: list):
+    def generate_text_email(self):
+        input: list = self.gmail_app.get_emails(how_many=5, by_labels=['UNREAD'])
         logging.info("Generating text from incoming emails")
         repository = 'basicconfig/repository.json'
         text = [
             "A következő üzenetei érkeztek. "
         ]
         with open(repository, mode='r', encoding='utf-8') as file:
-            dict_elem = json.load(file)
-            for item in data[:]:
-                if item in dict_elem:
-                    data.remove(item)
+            persisted_emails = json.load(file)
+            for item in input[:]:
+                if item in persisted_emails:
+                    input.remove(item)
                 else:
-                    dict_elem.append(item)
+                    persisted_emails.append(item)
         with open(repository, 'w', encoding='utf-8') as file:
-            json.dump(dict_elem, file, ensure_ascii=False)
-        logging.debug(f"New messages: {data}")
-        if len(data) == 0:
+            json.dump(persisted_emails, file, ensure_ascii=False)
+        logging.debug(f"New messages: {input}")
+        if len(input) == 0:
             text = ['Nem érkezett új üzenete.']
-        for item in data:
+        for item in input:
             text.append(
-                " Érkezett: " + item['date'] + ", " + item['sender'] + " feladótól, a témája pedig " + item['subject'] + ".")
+                " Érkezett: " + item['date'] + ", " + item['sender'] + " feladótól, a témája " + item['subject'] + ".")
         return text
 
     def synthesize(self, text):

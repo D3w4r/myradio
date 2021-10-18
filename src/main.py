@@ -40,11 +40,11 @@ def load_config():
 
 
 def stop_track(client: Client):
-    current_track = client.current_track()
-    name = current_track['item']['name']
+    stopped_track = client.stopped_track()
+    name = stopped_track['item']['name']
     logging.info(f"Stopping last track: {name}")
     client.pause_playback()
-    return current_track
+    return stopped_track
 
 
 def bbc_minute(client, track):
@@ -56,33 +56,25 @@ def bbc_minute(client, track):
 
 
 def restart_playback(client, podcast, track):
-    progress_ms = track['progress_ms']
-    name = track['item']['name']
-
     time.sleep(podcast['items'][0]['duration_ms'] / 1000)
 
-    logging.info(f"Continuing last track: {name}")
-    uris = [track['item']['uri']]
-    client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
+    client.restart_playback()
 
 
 def demo(client: Client):
     speech, basic_config = load_config()
 
-    gmail = Gmail()
+    client.pause_playback()
 
-    current = stop_track(client)
-
-    # TODO: idősávok!!!
     text = []
     text += speech.generate_greeting()
-    text += speech.generate_text_weather(basic_config)
-    text += speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD']))
+    text += speech.generate_text_weather()
+    text += speech.generate_text_email()
     text += speech.generate_text_news()
 
     speech.synthesize(text)
 
-    bbc_minute(client, current)
+    bbc_minute(client)
 
 
 def main():

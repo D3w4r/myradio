@@ -22,6 +22,7 @@ class Gmail:
         self.token_pickle = secret + '/token.pickle'
         self.credential_json = secret + '/credentials.json'
         self.repository = secret + '/repository.json'
+
         if os.path.exists(self.token_pickle):
             with open(self.token_pickle, 'rb') as token:
                 self.credentials = pickle.load(token)
@@ -32,7 +33,6 @@ class Gmail:
                 self.flow = InstalledAppFlow.from_client_secrets_file(self.credential_json, self.SCOPES)
                 self.credentials = self.flow.run_local_server(port=9090)
 
-            # Save access token
             with open(self.token_pickle, 'wb') as token:
                 pickle.dump(self.credentials, token)
 

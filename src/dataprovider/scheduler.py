@@ -4,20 +4,12 @@ from datetime import date, datetime
 from src.constants.constats import Time
 from src.speech import Speech
 
-
 logging.basicConfig(level=logging.INFO)
 
 
 class Scheduler:
 
-    def get_current_time_str(self):
-        now = datetime.now()
-        current_time = now.strftime("%H:%M")
-        return current_time
 
-    def get_current_date_str(self):
-        today = date.today().strftime("%Y.%m.%d.")
-        return today
 
     def get_part_of_day(self):
         now = datetime.now()
@@ -34,15 +26,18 @@ class Scheduler:
         if part_of_day == Time.BREAKFAST:
             return_text += speech_client.generate_greeting()
             return_text += speech_client.generate_text_weather()
+            return_text += speech_client.generate_text_news()
         elif part_of_day == Time.LUNCH:
             return_text += speech_client.generate_text_email()
+            # TODO: openweather for the afternoon
+            pass
         else:
+            return_text += speech_client.generate_text_news()
+            # TODO: bbc minute evening
             pass
         return return_text
-
 
 
 if __name__ == "__main__":
     s = Scheduler()
     s.get_part_of_day()
-

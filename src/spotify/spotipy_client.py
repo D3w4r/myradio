@@ -18,6 +18,7 @@ class Client:
                  ):
         self.username = username
         self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        self.stopped_track = None
 
     def active_devices(self):
         """
@@ -128,6 +129,12 @@ class Client:
         self.spotifyObject.start_playback(device_id=self.device, context_uri=context_uri, uris=uris, offset=None,
                                           position_ms=progress_ms)
 
+    def restart_playback(self):
+        uri = self.stopped_track['item']['uri']
+        progress_ms = self.stopped_track['progress_ms']
+        self.spotifyObject.start_playback(device_id=self.device, context_uri=None, uris=uri, offset=None,
+                                          position_ms=progress_ms)
+
     def select_song(self, from_tracks):
         """
         Selects track uri from the given list of tracks
@@ -141,9 +148,13 @@ class Client:
 
     def pause_playback(self):
         """
-        Pauses playback
+        Pauses playback and returns stopped track
         """
+        stopped_track = self.stopped_track()
+        name = stopped_track['item']['name']
         self.spotifyObject.pause_playback(self.device)
+        logging.info(f"Stopping last track: {name}")
+        self.stopped_track = stopped_track
 
 
 if __name__ == "__main__":
