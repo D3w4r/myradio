@@ -46,14 +46,8 @@ class Speech:
         logging.info('Generating text for weather...')
         weather = Weather(self.config['weather']['city'])
         data = weather.weather_info()
-        if self.language == 'en-EN':
-            return ["It's currently " + str(round(data["current"]["temp"])) + " degrees outside. The weather is " + str(
-                data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
-                round(data["current"]["wind_speed"])) + " km/h."]
-        if self.language == 'hu-HU':
-            return ["Jelenleg " + str(round(data["current"]["temp"])) + " fok van. Az időjárás " + str(
-                data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
-                round(data["current"]["wind_speed"])) + " km/h."]
+        return ["Jelenleg " + str(round(data["current"]["temp"])) + " fok van." + " A szél ma várhatóan " + str(
+            round(data["current"]["wind_speed"])) + " km/h sebességgel fog fújni."]
 
     def generate_text_news(self):
         logging.info('Generating text from RSS feed')
@@ -73,7 +67,7 @@ class Speech:
         logging.info("Generating text from incoming emails")
         repository = 'basicconfig/repository.json'
         text = [
-            "A következő üzeneteid érkeztek: "
+            "A következő feladóktól üzeneteid érkeztek: "
         ]
         with open(repository, mode='r', encoding='utf-8') as file:
             persisted_emails = json.load(file)
@@ -87,9 +81,15 @@ class Speech:
         logging.debug(f"New messages: {input}")
         if len(input) == 0:
             text = ['Nem érkezett új üzeneted.']
-        for item in input:
-            text.append(
-                " Érkezett: " + item['date'] + ", " + item['sender'] + " feladótól, a témája " + item['subject'] + ".")
+        senders = []
+        for item in input[:]:
+            if item['sender'] not in senders:
+                senders.append(item['sender'])
+        for sender in senders:
+            if sender == senders[-1]:
+                text.append(sender + '. ')
+            else:
+                text.append(" " + sender + ", ")
         return text
 
     def synthesize(self, text):

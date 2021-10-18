@@ -3,7 +3,7 @@ from enum import Enum
 
 class Constants(Enum):
     CACHE_PATH = 'D:/Data/ProjectLaboratory/myradio/src/cache'
-    RSS_REPOSITORY = 'D:/Data/ProjectLaboratory/myradio/src/cache/rss_repository.json'
+    RSS_REPOSITORY = 'D:/Data/ProjectLaboratory/myradio/src/cache/rss_repository'
     CONFIG = 'D:/Data/ProjectLaboratory/myradio/src/basicconfig/basic_config.json'
 
 
