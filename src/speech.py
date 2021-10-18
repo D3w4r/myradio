@@ -34,7 +34,13 @@ class Speech:
         logging.info('Generating hello message')
         today = self.get_current_date_str()
         current_time = self.get_current_time_str()
-        return ["Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."]
+        return ["Szia! " + current_time + " órai jelentésem következik! "]
+
+    def generate_morning_greeting(self):
+        logging.info('Generating hello message')
+        today = self.get_current_date_str()
+        current_time = self.get_current_time_str()
+        return ["Jó reggelt! Ma " + today + " van, az óra " + current_time + "-t mutat. "]
 
     def generate_text_weather(self):
         logging.info('Generating text for weather...')
@@ -67,7 +73,7 @@ class Speech:
         logging.info("Generating text from incoming emails")
         repository = 'basicconfig/repository.json'
         text = [
-            "A következő üzenetei érkeztek. "
+            "A következő üzeneteid érkeztek: "
         ]
         with open(repository, mode='r', encoding='utf-8') as file:
             persisted_emails = json.load(file)
@@ -80,7 +86,7 @@ class Speech:
             json.dump(persisted_emails, file, ensure_ascii=False)
         logging.debug(f"New messages: {input}")
         if len(input) == 0:
-            text = ['Nem érkezett új üzenete.']
+            text = ['Nem érkezett új üzeneted.']
         for item in input:
             text.append(
                 " Érkezett: " + item['date'] + ", " + item['sender'] + " feladótól, a témája " + item['subject'] + ".")

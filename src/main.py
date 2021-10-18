@@ -39,7 +39,7 @@ def load_config():
 
 
 def stop_track(client: Client):
-    stopped_track = client.stopped_track()
+    stopped_track = client.current_track()
     name = stopped_track['item']['name']
     logging.info(f"Stopping last track: {name}")
     client.pause_playback()
@@ -49,7 +49,7 @@ def stop_track(client: Client):
 def bbc_minute(client):
     bbc_minute = client.search("BBC Minute", 1, 0, 'show')
     podcast = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
-    client.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']])
+    client.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']], progress_ms=0)
 
     time.sleep(60)
     client.restart_playback()

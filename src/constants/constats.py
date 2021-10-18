@@ -6,6 +6,7 @@ class Constants(Enum):
     RSS_REPOSITORY = 'D:/Data/ProjectLaboratory/myradio/src/cache/rss_repository.json'
     CONFIG = 'D:/Data/ProjectLaboratory/myradio/src/basicconfig/basic_config.json'
 
+
 class Time(Enum):
     BREAKFAST = 1
     LUNCH = 2
