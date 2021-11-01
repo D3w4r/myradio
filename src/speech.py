@@ -2,9 +2,9 @@ import json
 import logging
 from datetime import datetime, date
 
-from src.dataprovider.mail import Gmail
-from src.dataprovider.rss import Feed
-from src.dataprovider.weather import Weather
+from src.mail import Gmail
+from src.rss import Feed
+from src.weather import Weather
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,7 +16,7 @@ class Speech:
 
     def __init__(self, language):
         self.language = language
-        with open('basicconfig/basic_config.json', mode='r', encoding='utf-8') as config:
+        with open('src/basicconfig/basic_config.json', mode='r', encoding='utf-8') as config:
             self.config = json.load(config)
         self.weather_app = Weather(self.config['weather']['city'])
         self.gmail_app = Gmail()

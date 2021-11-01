@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 import os
 import pickle
@@ -9,9 +8,9 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-from src.enums.enums import Constants
+from src.enums import Constants
 
-import src.persistence.repository
+import src.repository
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,7 +31,10 @@ class Gmail:
                 self.credentials = pickle.load(token)
         if not self.credentials or not self.credentials.valid:
             if self.credentials and self.credentials.expired and self.credentials.refresh_token:
-                self.credentials.refresh(Request())
+                try:
+                    self.credentials.refresh(Request())
+                except Exception:
+                    os.remove(os.environ.get('SECRET_DATA_DIR') + '/token.pickle')
             else:
                 self.flow = InstalledAppFlow.from_client_secrets_file(self.credential_json, self.SCOPES)
                 self.credentials = self.flow.run_local_server(port=9090)
@@ -43,7 +45,7 @@ class Gmail:
     def get_emails_by_labels(self, how_many: int, by_labels: list):
         """
         Get emails
-        :param how_many: how manyu you want to get.
+        :param how_many: how many you want to get.
         :param by_labels: by what labels - e.g. UNREAD
         :return: dictionary of emails
         """
@@ -77,7 +79,7 @@ class Gmail:
                 }
             )
 
-        repo = src.persistence.repository.Repository()
+        repo = src.repository.Repository()
         repo.persist_dict(self.repository, ret)
         return ret
 

@@ -3,8 +3,8 @@ import logging
 
 import feedparser
 
-import src.persistence.repository
-from src.enums.enums import Constants
+import src.repository
+from src.enums import Constants
 
 logging.basicConfig(level=logging.INFO)
 
@@ -47,7 +47,7 @@ class Feed:
             for i in item['entries'][:howmany]:
                 title_data.append(i['title'])
 
-        repo = src.persistence.repository.Repository()
+        repo = src.repository.Repository()
         title_data = repo.persist_and_filter_list(input_list=title_data,
                                                   path=Constants.RSS_REPOSITORY.value)
         return title_data

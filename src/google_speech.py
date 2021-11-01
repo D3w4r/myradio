@@ -5,13 +5,13 @@ import time
 import google.cloud.texttospeech as tts
 import vlc
 
-import src.azure.azure_speech
-from src.enums.enums import Constants
+from src.speech import Speech
+from src.enums import Constants
 
 logging.basicConfig(level=logging.INFO)
 
 
-class Speech(src.speech.Speech):
+class GoogleSpeech(Speech):
 
     def __init__(self, voice_params: tts.VoiceSelectionParams, audio_config: tts.AudioConfig):
         super().__init__(voice_params.language_code)
@@ -62,7 +62,7 @@ class Speech(src.speech.Speech):
             logging.info(f'Generated speech saved to "{filename}"')
 
         player = vlc.MediaPlayer()
-        media = vlc.Media(Constants.CACHE_PATH.value + '\hu-HU.mp3')
+        media = vlc.Media(Constants.CACHE_PATH.value + '/hu-HU.mp3')
         player.set_media(media)
         player.play()
         time.sleep(1)
@@ -70,7 +70,7 @@ class Speech(src.speech.Speech):
 
 
 if __name__ == "__main__":
-    speech = Speech(voice_params=tts.VoiceSelectionParams(name="hu-HU-Wavenet-A", language_code='hu-HU'),
-                    audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
+    speech = GoogleSpeech(voice_params=tts.VoiceSelectionParams(name="hu-HU-Wavenet-A", language_code='hu-HU'),
+                          audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
 
     speech.synthesize(text=["Milyen nap van ma? Ez egy teszt"])

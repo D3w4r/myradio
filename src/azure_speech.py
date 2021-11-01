@@ -5,13 +5,14 @@ import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
-import src.speech
-from src.dataprovider.mail import Gmail
+
+from src.mail import Gmail
+from src.speech import Speech
 
 logging.basicConfig(level=logging.INFO)
 
 
-class Speech(src.speech.Speech):
+class AzureSpeech(Speech):
     """"Class for generating and synthesising speech"""
 
     def __init__(self, speechconfig: SpeechConfig, voice, language):
@@ -44,8 +45,8 @@ class Speech(src.speech.Speech):
 
 # TESTS #
 if __name__ == "__main__":
-    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
-                    language='hu-HU', voice='hu-HU-NoemiNeural')
+    speech = AzureSpeech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
+                         language='hu-HU', voice='hu-HU-NoemiNeural')
     gmail = Gmail()
 
     text = [

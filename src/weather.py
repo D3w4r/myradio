@@ -4,7 +4,7 @@ import logging
 import requests
 import gzip
 
-from src.enums.enums import Constants
+from src.enums import Constants
 
 logging.basicConfig(level=logging.INFO)
 
@@ -42,7 +42,7 @@ class Weather:
         :return: the weather info in json format
         """
         logging.info('Getting weather info...')
-        with open('D:/Data/ProjectLaboratory/myradio/src/cache/current.city.list.json', 'r', encoding='utf-8') as file:
+        with open('/src/cache/current.city.list.json', 'r', encoding='utf-8') as file:
             cities = json.load(file)
         url = "https://api.openweathermap.org/data/2.5/weather?id=%s&appid=%s&lang=%s&units=metric" % (
             self.get_city_id(cities), self.api_key, "hu")

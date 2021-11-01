@@ -6,31 +6,30 @@ import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from src.azure import azure_speech
-from src.dataprovider.scheduler import Scheduler
-from src.google import google_speech
-from src.spotify.spotipy_client import Client
+from src import azure_speech, google_speech
+from src.scheduler import Scheduler
+from src.spotipy_client import Client
 
 logging.basicConfig(level=logging.INFO)
 
 
 def load_config():
-    with open('basicconfig/basic_config.json') as basic:
+    with open('src/basicconfig/basic_config.json') as basic:
         basic_config = json.load(basic)
     if basic_config['speech']['resource'] == 'azure':
-        with open('azure/config/azure_config.json') as azure_config:
+        with open('src/azure/config/azure_config.json') as azure_config:
             config = json.load(azure_config)
-            speech = azure_speech.Speech(
+            speech = azure_speech.AzureSpeech(
                 speechconfig=SpeechConfig(
                     subscription=os.environ.get('AZURE_TTS_ID'),
                     region=config['region']),
                 language=config['language'],
                 voice=config['voice'])
     elif basic_config['speech']['resource'] == 'google':
-        with open('google/config/google_config.json') as google_config:
+        with open('src/google/config/google_config.json') as google_config:
             config = json.load(google_config)
             voice_params = config['voice_params']
-            speech = google_speech.Speech(
+            speech = google_speech.GoogleSpeech(
                 voice_params=tts.VoiceSelectionParams(
                     name=voice_params['name'],
                     language_code=voice_params['language_code']),
