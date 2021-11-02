@@ -45,7 +45,7 @@ def top_k_predictions(array, k):
 if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("roberta-base")
     trained_model = TFAutoModelForSequenceClassification.from_pretrained("roberta-base", num_labels=28)
-    trained_model.load_weights('saved_weights.h5')
+    trained_model.load_weights('saved-weights.h5')
 
     texts = [
         'Who scored the maximum goals?',
