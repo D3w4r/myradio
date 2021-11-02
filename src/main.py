@@ -1,59 +1,57 @@
+import json
 import logging
 import os
 
+import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from weather import Weather
-from client import Client
-from mail import Gmail
-from mythread import MusicThread
-from speech import Speech
+from src import azure_speech, google_speech
+from src.scheduler import Scheduler
+from src.spotipy_client import Client
 
 logging.basicConfig(level=logging.INFO)
 
 
-def speak(client: Client, thread: MusicThread):
-    if thread.getFlag():
-        # Weather
-        weather_app = Weather('Budapest')
-        # Speech
-        speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='westeurope'),
-                        language='hu-HU', voice='hu-HU-NoemiNeural')
-        # Mail
-        gmail = Gmail()
+def load_config():
+    with open('src/basicconfig/basic_config.json') as basic:
+        basic_config = json.load(basic)
+    if basic_config['speech']['resource'] == 'azure':
+        with open('src/azure/config/azure_config.json') as azure_config:
+            config = json.load(azure_config)
+            speech = azure_speech.AzureSpeech(
+                speechconfig=SpeechConfig(
+                    subscription=os.environ.get('AZURE_TTS_ID'),
+                    region=config['region']),
+                language=config['language'],
+                voice=config['voice'])
+    elif basic_config['speech']['resource'] == 'google':
+        with open('src/google/config/google_config.json') as google_config:
+            config = json.load(google_config)
+            voice_params = config['voice_params']
+            speech = google_speech.GoogleSpeech(
+                voice_params=tts.VoiceSelectionParams(
+                    name=voice_params['name'],
+                    language_code=voice_params['language_code']),
+                audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
+    return speech, basic_config
 
-        current_track = client.current_track()
-        progress_ms = current_track['progress_ms']
-        name = current_track['item']['name']
-        logging.info(f"Stopping last track: {name}")
-        client.pause_playback()
-        # Synthesise
-        text = [
-            speech.generate_text_hello(),
-            speech.generate_text_weather(weather_app.weather_info())
-        ]
-        text = text + speech.generate_text_news('https://telex.hu/rss', how_many=2)
-        for i in speech.generate_text_email(
-                gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
-            text.append(i)
-        speech.synthesize(text)
-        # Restart track
-        logging.info(f"Continuing last track: {name}")
-        uris = [current_track['item']['uri']]
-        client.start_playback(context_uri=None, uris=uris, progress_ms=progress_ms)
+
+def demo(spotify: Client):
+    speech, basic_config = load_config()
+    scheduler = Scheduler()
+
+    text = scheduler.generate_feed(speech, spotify)
+
+    speech.synthesize(text)
+    spotify.bbc_minute()
 
 
 def main():
     client = Client('dewarhun')
-    t1 = MusicThread(client=client, threadName='music-thread', threadID=1)
-    t1.start()
-    timer = multitimer.MultiTimer(interval=20.0, function=speak, args=[client, t1], runonstart=False)
+    client.set_primary_device(client.active_devices(), 0)
+    timer = multitimer.MultiTimer(interval=5.0, function=demo, args=[client], runonstart=False)
     timer.start()
-
-    t1.join()
-    timer.stop()
-    timer.join()
 
 
 if __name__ == "__main__":

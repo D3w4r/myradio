@@ -1,8 +1,13 @@
-import feedparser
 import json
 import logging
 
+import feedparser
+
+import src.repository
+from src.enums import Constants
+
 logging.basicConfig(level=logging.INFO)
+
 
 class Feed:
     """Class for getting RSS feed from desired URL"""
@@ -21,39 +26,45 @@ class Feed:
         elif heading:
             for item in heading:
                 self.feed.append(feedparser.parse(
-                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item[
-                        'name'] + '%22]%2C%22parentId%22%3A[%22null%22]}'))
+                    'https://telex.hu/rss/archivum?filters={%22superTagSlugs%22%3A[%22' + item + '%22]%2C%22parentId'
+                                                                                                 '%22%3A['
+                                                                                                 '%22null%22]}'))
 
-    def titles(self, howmany: int = None):
+    def get_news_titles(self, howmany: int = None):
         """
         :param howmany: how many you want to get
         :return: titles of feed entries
         """
-        logging.info('Getting entries from RSS feed...')
+        logging.debug('Getting entries from RSS feed...')
 
-        data = []
+        title_data = []
+
         if howmany is None:
             howmany = 0
             for item in self.feed:
                 howmany += len(item['entries'])
         for item in self.feed:
             for i in item['entries'][:howmany]:
-                data.append(i['title'])
-        return data
+                title_data.append(i['title'])
+
+        repo = src.repository.Repository()
+        title_data = repo.persist_and_filter_list(input_list=title_data,
+                                                  path=Constants.RSS_REPOSITORY.value)
+        return title_data
 
     def source(self):
         """
         :return: the source of the rss feed
         """
-        logging.info('Getting RSS sources...')
+        logging.info('Getting RSS sources')
         href = self.feed[0]['href']
         return href.split('/')[2]
 
 
 if __name__ == "__main__":
     # TESTS #
-    with open('data/headings.json', 'r') as file:
-        headings = json.load(file)
-    feed = Feed('https://telex.hu/rss', heading=headings)
-    data = feed.titles(1)
+    with open(Constants.CONFIG.value, 'r') as file:
+        config = json.load(file)
+    feed = Feed('https://telex.hu/rss', heading=config['news']['category'])
+    data = feed.get_news_titles(1)
     logging.info(data)

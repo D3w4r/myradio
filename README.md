@@ -1,43 +1,30 @@
-# MyRadio
+# Thesis Demonstration App
 
-This project is for Project Laboratory (VITMAL01) on BME 6th semester.
+This project is for Project Laboratory (VITMAL01) on BME 6th semester, which was carried on to be a demonstrator app for
+my thesis demonstration in the 7th semester.
 
 ***
 
 # About
 
-MyRadio uses [Spotipy](https://spotipy.readthedocs.io/en/2.18.0/), [OpenWeatherMap](https://openweathermap.org/api)
-and [Azure TTS](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/index-text-to-speech) (Free
-License!) to simulate an everyday radio broadcast. The project in the future may utilize Neural Networks to select
-intresting topics for the user, through an RSS feed from [telex.hu](https://telex.hu/)
+The project uses [Spotipy](https://spotipy.readthedocs.io/en/2.18.0/), [OpenWeatherMap](https://openweathermap.org/api)
+and different TTS interfaces ([Azure TTS](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/index-text-to-speech), [Google TTS](https://cloud.google.com/text-to-speech)) to simulate an everyday radio broadcast with custom information elements.
 
+-- TODO
 ***
 
 # Python packages
 
-> These may not be included by default
+There are too many dependencies regarding the used packages, therefore I included my whole list of packages on my
+device.
 
-* spotipy
-* geopy
-* azure-cognitiveservices-speech
-* feedparser
-* google-api-python-client
-* google-auth-httplib2
-* google-auth-oauthlib
-* pprint
-* pickle
-
-Or just use
+*Use this command to import:*
 
 ```commandline
 pip install -r requirements.txt
 ```
 
-**Important:** ``requirements.txt`` contains every dependency of the packages listed above!
-
-**Please note, that you need to use your own API keys for Azure TTS and OpenWeatherMap**
-
-***
+---
 
 # Installation Guide
 
@@ -55,32 +42,34 @@ or on `Windows`:
 SET VARIABLE_NAME='value'
 ```
 
-You may have to restart your computer after this!
+The OS does not recognize changes in environmental variables immediately, if you want your changes to take effect please
+restart your device.
 
-> If you are using PyCharm simply go to --> `Edit Configurations..` --> `Environmental variables` and set the values.
+> If you are using PyCharm (JetBrains IDE) simply go to --> `Edit Configurations..` --> `Environmental variables` and set the values.
 
-> Please make sure the project working directory is set to the `src` folder in your IDE, otherwise the code will not recognize the given paths for specific files.
+> If there are import errors in the source files please make sure to set the `working directory` to `{project_root}/src`.
+
+### Secrets
+
+-- TODO
 
 ### Spotify
-
-You can find custom functions in `client.py`. This code uses the Spotipy API. You can find the documentation under
-the `About` section of this document.
 
 For this module to work, you need to create the following environmental variables:
 `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REDIRECT_URI` each with the value of the coresponding secret key
 for your Spotify Web Application. The `SPOTIFY_REDIRECT_URI` is `http://localhost:8080/`
 
-***Please note that User Playback State modification only works with PREMIUM accounts***
+***User Playback State modification only works with PREMIUM accounts***
 
-> You can find your API keys at [this link](https://developer.spotify.com/dashboard/applications).
+> You can find more things about your API keys [here](https://developer.spotify.com/dashboard/applications).
 
-In ``main.py`` `line 45`, please change the argument of `Client()` to your username. 
+Please use your own username in the code.
 
 ### Gmail API
 
-For this part you will be needing the `credentails.json` file to be copied into `src/auth`. After that, please authorize
+For this part you will be needing the `credentails.json` file to be copied into `src/secrets`. After that, please authorize
 the application to use the Gmail profile of your choice. If you see the following
-sentence: `The authentication flow has completed. You may close this window.` the authorization was succesful.
+sentence: `The authentication flow has completed. You may close this window.` the authorization was successful.
 
 ### Azure
 
@@ -93,4 +82,5 @@ Lastly please create an environmental variable `OPENWEATHERMAP_ID` with your API
 ### OpenSSL
 
 If you encounter an OpenSSL error on `Linux` follow
-this [guide](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/how-to-configure-openssl-linux?pivots=programming-language-csharp).
+this [guide](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/how-to-configure-openssl-linux?pivots=programming-language-csharp)
+.

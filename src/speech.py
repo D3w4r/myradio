@@ -1,130 +1,96 @@
-import os
 import json
 import logging
 from datetime import datetime, date
 
-import azure.cognitiveservices.speech as speechsdk
-from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
-from azure.cognitiveservices.speech.audio import AudioOutputConfig
-
-from mail import Gmail
-from rss import Feed
+from src.mail import Gmail
+from src.rss import Feed
+from src.weather import Weather
 
 logging.basicConfig(level=logging.INFO)
 
 
 class Speech:
-    """"Class for generating and synthesising speech"""
+    """
+    General class for speech synthesising.
+    """
 
-    def __init__(self, speechconfig: SpeechConfig, voice, language):
-        if voice is None:
-            logging.error('There is no voice specified')
-            raise RuntimeError('Please specify a voice')
-        if language is None:
-            raise RuntimeError('Please specify a language')
+    def __init__(self, language):
         self.language = language
-        speech_config = speechconfig
-        speech_config.speech_synthesis_language = language
-        speechconfig.speech_synthesis_voice_name = voice
-        self.speech_synthesizer = SpeechSynthesizer(speech_config=speech_config,
-                                                    audio_config=AudioOutputConfig(use_default_speaker=True))
-        self.setup = True
+        with open('src/basicconfig/basic_config.json', mode='r', encoding='utf-8') as config:
+            self.config = json.load(config)
+        self.weather_app = Weather(self.config['weather']['city'])
+        self.gmail_app = Gmail()
 
-    def getFlag(self):
-        return self.setup
-
-    def setFlag(self):
-        """You can only call it once"""
-        self.setup = False
-
-    def generate_text_hello(self):
-        logging.info('Generating hello message')
-        today = self.getCurrentDate()
-        current_time = self.getCurrentTime()
-        return "Üdvözlöm! Ma " + today + " van, az idő " + current_time + "."
-
-    def getCurrentDate(self):
-        today = date.today().strftime("%Y.%m.%d.")
-        return today
-
-    def getCurrentTime(self):
+    def get_current_time_str(self):
         now = datetime.now()
         current_time = now.strftime("%H:%M")
         return current_time
 
-    def generate_text_weather(self, data):
+    def get_current_date_str(self):
+        today = date.today().strftime("%Y.%m.%d.")
+        return today
+
+    def generate_greeting(self):
+        logging.info('Generating hello message')
+        current_time = self.get_current_time_str()
+        return ["Szia! " + current_time + " órai jelentésem következik! "]
+
+    def generate_morning_greeting(self):
+        logging.info('Generating hello message')
+        today = self.get_current_date_str()
+        current_time = self.get_current_time_str()
+        return ["Jó reggelt! Ma " + today + " van, az óra " + current_time + "-t mutat. "]
+
+    def generate_text_weather(self):
         logging.info('Generating text for weather...')
-        if self.language == 'en-EN':
-            return "It's currently " + str(data["current"]["temp"]) + " degrees, but it feels like " + str(
-                data["current"]["feels_like"]) + " degrees outside. The description of the weather is " + str(
-                data["current"]["weather"][0]["description"]) + ". Wind speed is " + str(
-                data["current"]["wind_speed"]) + " kilometers an hour."
+        weather = Weather(self.config['weather']['city'])
+        data = weather.weather_info()
+        return ["Jelenleg " + str(round(data["main"]["temp"])) + " fok van." + " A szél ma várhatóan " + str(
+            round(data["wind"]["speed"])) + " km/h sebességgel fog fújni."]
 
-        if self.language == 'hu-HU':
-            return "Jelenleg " + str(data["current"]["temp"]) + " fok van, ami " + str(
-                data["current"]["feels_like"]) + " foknak érződik. Az időjárás leírása: " + str(
-                data["current"]["weather"][0]["description"]) + ". A szél sebessége " + str(
-                data["current"]["wind_speed"]) + " kilóméter per óra."
-
-    def generate_text_news(self, url, how_many: int):
+    def generate_text_news(self):
         logging.info('Generating text from RSS feed')
-        with open('data/headings.json', 'r') as file:
-            headings = json.load(file)
-        feed = Feed(url, heading=headings)
-        data = feed.titles(howmany=how_many)
-        source = feed.source()
-        logging.info('From source: ' + source)
-        return_data = [" A legfrissebb hírek következnek, a " + source + " jóvoltából. "]
-        for sentence in data:
-            return_data.append(sentence + ". ")
+        feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
+        news = feed.get_news_titles(howmany=self.config['news']['how_many'])
+        logging.info('From source: ' + feed.source())
+        return_data = []
+        if news:
+            for headline in news:
+                return_data.append(headline + ". ")
+        else:
+            return_data = ['Egyelőre nem történt új hír értékű esemény.']
         return return_data
 
-    def generate_text_email(self, data: list):
+    def generate_text_email(self):
+        input: list = self.gmail_app.get_emails_by_labels(how_many=5, by_labels=['UNREAD'])
         logging.info("Generating text from incoming emails")
+        repository = 'basicconfig/repository.json'
         text = [
-            "A következő üzenetei érkeztek. "
+            "A következő feladóktól üzeneteid érkeztek: "
         ]
-        with open('data/repository.json', mode='r', encoding='utf-8') as file:
-            dict_elem = json.load(file)
-            for item in data[:]:
-                if item in dict_elem:
-                    data.remove(item)
+        with open(repository, mode='r', encoding='utf-8') as file:
+            persisted_emails = json.load(file)
+            for item in input[:]:
+                if item in persisted_emails:
+                    input.remove(item)
                 else:
-                    dict_elem.append(item)
-        with open('data/repository.json', 'w', encoding='utf-8') as file:
-            json.dump(dict_elem, file, ensure_ascii=False)
-        logging.debug(f"New messages: {data}")
-        if len(data) == 0:
-            text = ['Nem érkezett új üzenete.']
-        for item in data:
-            text.append(
-                "Érkezett: " + item['date'] + " , feladó: " + item['sender'] + ", téma: " + item['subject'] + ". ")
+                    persisted_emails.append(item)
+        with open(repository, 'w', encoding='utf-8') as file:
+            json.dump(persisted_emails, file, ensure_ascii=False)
+        logging.debug(f"New messages: {input}")
+        if len(input) == 0:
+            text = ['Nem érkezett új üzeneted.']
+        senders = []
+        for item in input[:]:
+            if item['sender'] not in senders:
+                senders.append(item['sender'])
+        for sender in senders:
+            if sender == senders[-1]:
+                text.append(sender + '. ')
+            else:
+                text.append(" " + sender + ", ")
         return text
 
-    def synthesize(self, text_list: list):
-        logging.info('Synthesising speech...')
-        for item in text_list:
-            result = self.speech_synthesizer.speak_text(item)
-            if result.reason == speechsdk.ResultReason.Canceled:
-                cancellation_details = result.cancellation_details
-                logging.error(f"Speech synthesis canceled: {cancellation_details.reason}")
-                if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                    if cancellation_details.error_details:
-                        logging.error(f"Error details: {cancellation_details.error_details}")
-                break
+    def synthesize(self, text):
+        pass
 
-
-# TESTS #
-if __name__ == "__main__":
-    print(f"AZURE_TTS_ID {os.environ.get('AZURE_TTS_ID')}")
-    speech = Speech(speechconfig=SpeechConfig(subscription=os.environ.get('AZURE_TTS_ID'), region='northeurope'),
-                    language='hu-HU', voice='hu-HU-NoemiNeural')
-    gmail = Gmail()
-
-    text = [
-        speech.generate_text_hello()
-    ]
-    text = text + speech.generate_text_news('https://telex.hu/rss', how_many=1)
-    for i in speech.generate_text_email(gmail.get_emails(how_many=5, by_labels=['UNREAD'])):
-        text.append(i)
-    speech.synthesize(text)
