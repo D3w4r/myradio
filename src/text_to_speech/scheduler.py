@@ -1,9 +1,9 @@
 import logging
 from datetime import datetime
 
-import src.spotipy_client
-from src.enums import Time
-from src.speech import Speech
+import music.spotipy_client
+from data.enums import Time
+from text_to_speech.speech import Speech
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,7 +19,7 @@ class Scheduler:
         else:
             return Time.DINNER
 
-    def generate_feed(self, speech_client: Speech, spotify_client: src.spotipy_client.Client):
+    def generate_feed(self, speech_client: Speech, spotify_client: music.spotipy_client.Client):
         spotify_client.pause_playback()
         part_of_day = self.get_part_of_day()
         text = []

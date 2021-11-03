@@ -2,11 +2,22 @@ import json
 import logging
 from datetime import datetime, date
 
-from src.mail import Gmail
-from src.rss import Feed
-from src.weather import Weather
+from data.mail import Gmail
+from data.rss import Feed
+from data.weather import Weather
 
-logging.basicConfig(level=logging.INFO)
+
+def get_current_time_str():
+    now = datetime.now()
+    current_time = now.strftime("%H:%M")
+    return current_time
+
+
+def get_current_date_str():
+    today = date.today().strftime("%Y.%m.%d.")
+    return today
+
+config_path = 'src/config/'
 
 
 class Speech:
@@ -15,58 +26,50 @@ class Speech:
     """
 
     def __init__(self, language):
+        self.logger = logging.getLogger(__name__)
         self.language = language
-        with open('src/basicconfig/basic_config.json', mode='r', encoding='utf-8') as config:
+        with open(config_path + 'basic_config.json', mode='r', encoding='utf-8') as config:
             self.config = json.load(config)
         self.weather_app = Weather(self.config['weather']['city'])
         self.gmail_app = Gmail()
 
-    def get_current_time_str(self):
-        now = datetime.now()
-        current_time = now.strftime("%H:%M")
-        return current_time
-
-    def get_current_date_str(self):
-        today = date.today().strftime("%Y.%m.%d.")
-        return today
-
     def generate_greeting(self):
-        logging.info('Generating hello message')
-        current_time = self.get_current_time_str()
-        return ["Szia! " + current_time + " órai jelentésem következik! "]
+        self.logger.info('Generating hello message')
+        current_time = get_current_time_str()
+        return ["Hi. It's " + current_time + " o'clock! Here is some information from the world! "]
 
     def generate_morning_greeting(self):
-        logging.info('Generating hello message')
-        today = self.get_current_date_str()
-        current_time = self.get_current_time_str()
-        return ["Jó reggelt! Ma " + today + " van, az óra " + current_time + "-t mutat. "]
+        self.logger.info('Generating hello message')
+        today = get_current_date_str()
+        current_time = get_current_time_str()
+        return ["Good morning! Its " + today + ", the current time is " + current_time + ". "]
 
     def generate_text_weather(self):
-        logging.info('Generating text for weather...')
+        self.logger.info('Generating text for weather...')
         weather = Weather(self.config['weather']['city'])
         data = weather.weather_info()
-        return ["Jelenleg " + str(round(data["main"]["temp"])) + " fok van." + " A szél ma várhatóan " + str(
-            round(data["wind"]["speed"])) + " km/h sebességgel fog fújni."]
+        return ["Its " + str(round(data["main"]["temp"])) + " degrees outside." + " The wind speed is " + str(
+            round(data["wind"]["speed"])) + " km/h."]
 
     def generate_text_news(self):
-        logging.info('Generating text from RSS feed')
+        self.logger.info('Generating text from RSS feed')
         feed = Feed(url=self.config['news']['source'], heading=self.config['news']['category'])
         news = feed.get_news_titles(howmany=self.config['news']['how_many'])
-        logging.info('From source: ' + feed.source())
+        self.logger.info('From source: ' + feed.source())
         return_data = []
         if news:
             for headline in news:
                 return_data.append(headline + ". ")
         else:
-            return_data = ['Egyelőre nem történt új hír értékű esemény.']
+            return_data = ['Nothing new has happened yet.']
         return return_data
 
     def generate_text_email(self):
         input: list = self.gmail_app.get_emails_by_labels(how_many=5, by_labels=['UNREAD'])
-        logging.info("Generating text from incoming emails")
-        repository = 'basicconfig/repository.json'
+        self.logger.info("Generating text from incoming emails")
+        repository = 'cache/repository.json'
         text = [
-            "A következő feladóktól üzeneteid érkeztek: "
+            "You've got mail from: "
         ]
         with open(repository, mode='r', encoding='utf-8') as file:
             persisted_emails = json.load(file)
@@ -77,9 +80,9 @@ class Speech:
                     persisted_emails.append(item)
         with open(repository, 'w', encoding='utf-8') as file:
             json.dump(persisted_emails, file, ensure_ascii=False)
-        logging.debug(f"New messages: {input}")
+        self.logger.debug(f"New messages: {input}")
         if len(input) == 0:
-            text = ['Nem érkezett új üzeneted.']
+            text = ["You've got no new messages!"]
         senders = []
         for item in input[:]:
             if item['sender'] not in senders:
@@ -93,4 +96,3 @@ class Speech:
 
     def synthesize(self, text):
         pass
-

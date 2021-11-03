@@ -8,9 +8,9 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-from src.enums import Constants
+from data.enums import Constants
 
-import src.repository
+import data.repository
 
 logging.basicConfig(level=logging.INFO)
 
@@ -79,7 +79,7 @@ class Gmail:
                 }
             )
 
-        repo = src.repository.Repository()
+        repo = data.repository.Repository()
         repo.persist_dict(self.repository, ret)
         return ret
 

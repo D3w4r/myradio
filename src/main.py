@@ -6,18 +6,21 @@ import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from src import azure_speech, google_speech
-from src.scheduler import Scheduler
-from src.spotipy_client import Client
+from text_to_speech import google_speech
+from src.text_to_speech import azure_speech
+from text_to_speech.scheduler import Scheduler
+from music.spotipy_client import Client
 
 logging.basicConfig(level=logging.INFO)
 
+config_path = 'src/config/'
+
 
 def load_config():
-    with open('src/basicconfig/basic_config.json') as basic:
+    with open(config_path + 'basic_config.json') as basic:
         basic_config = json.load(basic)
     if basic_config['speech']['resource'] == 'azure':
-        with open('src/azure/config/azure_config.json') as azure_config:
+        with open(config_path + 'azure_config.json') as azure_config:
             config = json.load(azure_config)
             speech = azure_speech.AzureSpeech(
                 speechconfig=SpeechConfig(
@@ -26,7 +29,7 @@ def load_config():
                 language=config['language'],
                 voice=config['voice'])
     elif basic_config['speech']['resource'] == 'google':
-        with open('src/google/config/google_config.json') as google_config:
+        with open(config_path + 'google_config.json') as google_config:
             config = json.load(google_config)
             voice_params = config['voice_params']
             speech = google_speech.GoogleSpeech(
@@ -37,7 +40,7 @@ def load_config():
     return speech, basic_config
 
 
-def demo(spotify: Client):
+def demonstrate(spotify: Client):
     speech, basic_config = load_config()
     scheduler = Scheduler()
 
@@ -50,7 +53,7 @@ def demo(spotify: Client):
 def main():
     client = Client('dewarhun')
     client.set_primary_device(client.active_devices(), 0)
-    timer = multitimer.MultiTimer(interval=5.0, function=demo, args=[client], runonstart=False)
+    timer = multitimer.MultiTimer(interval=5.0, function=demonstrate, args=[client], runonstart=False)
     timer.start()
 
 
