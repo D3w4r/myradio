@@ -139,4 +139,5 @@ dmypy.json
 /src/data/repository.json
 >>>>>>> dev
 /src/%SystemDrive%/
-/src/cache/saved-weights.h5
+/src/text_to_speech/saved-weights.h5
+/src/text_to_speech/saved-weights.h5

@@ -1,12 +1,12 @@
 {
   "news": {
-    "source": "https://telex.hu/rss",
-    "how_many": 1,
-    "category": [
-      "belfold",
-      "tech",
-      "kult",
-      "gazdasag"
+    "source": "https://telex.hu/rss/archivum?filters=%7B%22flags%22%3A%5B%22english%22%5D%2C%22parentId%22%3A%5B%22null%22%5D%7D",
+    "how_many": 5,
+    "interests": [
+      "POLITICS",
+      "SCIENCE & TECH",
+      "BUSINESS & MONEY",
+      "WORLD NEWS"
     ]
   },
   "speech": {

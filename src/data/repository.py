@@ -14,6 +14,7 @@ def hash_item(item):
 class Repository:
 
     def persist_and_filter_list(self, input_list: list, path):
+        """ Persists news, which have been already read to the user """
         to_return = []
         if not os.path.exists(path):
             f = open(path, 'w')

@@ -59,7 +59,7 @@ class Client:
         self.spotifyObject.start_playback(device_id=self.device, context_uri=context_uri, uris=uris, offset=None,
                                           position_ms=progress_ms)
 
-    def restart_playback(self):
+    def restart_playback(self): # Todo playlists!!
         uri = [self.current_track['item']['uri']]
         progress_ms = self.current_track['progress_ms']
         self.spotifyObject.start_playback(device_id=self.device, uris=uri, offset=None,
@@ -84,7 +84,6 @@ class Client:
         self.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']], progress_ms=0)
 
         time.sleep(60)
-        self.restart_playback()
 
 
 if __name__ == "__main__":

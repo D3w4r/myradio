@@ -6,17 +6,19 @@ import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from text_to_speech import google_speech
-from src.text_to_speech import azure_speech
-from text_to_speech.scheduler import Scheduler
+from dnn.model import RoBERTa
 from music.spotipy_client import Client
+from src.text_to_speech import azure_speech
+from text_to_speech import google_speech
+from text_to_speech.speech import Speech
+from text_to_speech.text_generator import TextGenerator
 
 logging.basicConfig(level=logging.INFO)
 
 config_path = 'src/config/'
 
 
-def load_config():
+def initialize():
     with open(config_path + 'basic_config.json') as basic:
         basic_config = json.load(basic)
     if basic_config['speech']['resource'] == 'azure':
@@ -37,23 +39,28 @@ def load_config():
                     name=voice_params['name'],
                     language_code=voice_params['language_code']),
                 audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
-    return speech, basic_config
+    return speech
 
 
-def demonstrate(spotify: Client):
-    speech, basic_config = load_config()
-    scheduler = Scheduler()
+def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
+    spotify.pause_playback()
 
-    text = scheduler.generate_feed(speech, spotify)
+    text = generator.generate_feed()
 
     speech.synthesize(text)
+
     spotify.bbc_minute()
+    spotify.restart_playback()
 
 
 def main():
     client = Client('dewarhun')
     client.set_primary_device(client.active_devices(), 0)
-    timer = multitimer.MultiTimer(interval=5.0, function=demonstrate, args=[client], runonstart=False)
+    generator = TextGenerator()
+    speech = initialize()
+
+    timer = multitimer.MultiTimer(interval=5.0, function=demonstrate, args=[client, generator, speech],
+                                  runonstart=False)
     timer.start()
 
 
