@@ -43,12 +43,9 @@ def initialize():
 
 
 def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
-    spotify.pause_playback()
-
     text = generator.generate_feed()
-
+    spotify.pause_playback()
     speech.synthesize(text)
-
     spotify.bbc_minute()
     spotify.restart_playback()
 
@@ -63,6 +60,7 @@ def main():
                                   runonstart=False)
     timer.start()
 
+# todo spotify playlists, weights path fix
 
 if __name__ == "__main__":
     main()

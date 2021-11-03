@@ -33,7 +33,7 @@ class TextGenerator:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        with open('../config/' + 'basic_config.json', mode='r', encoding='utf-8') as config:
+        with open('src/config/' + 'basic_config.json', mode='r', encoding='utf-8') as config:
             self.config = json.load(config)
         self.weather_app = Weather(self.config['weather']['city'])
         self.gmail_app = Gmail()
