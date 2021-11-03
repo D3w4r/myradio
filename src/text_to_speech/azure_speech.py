@@ -6,10 +6,8 @@ from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
 
-from src.mail import Gmail
-from src.speech import Speech
-
-logging.basicConfig(level=logging.INFO)
+from data.mail import Gmail
+from text_to_speech.speech import Speech
 
 
 class AzureSpeech(Speech):
@@ -17,8 +15,9 @@ class AzureSpeech(Speech):
 
     def __init__(self, speechconfig: SpeechConfig, voice, language):
         super().__init__(language)
+        self.logger = logging.getLogger(__name__)
         if voice is None:
-            logging.error('There is no voice specified')
+            self.logger.error('There is no voice specified')
             raise RuntimeError('Please specify a voice')
         if language is None:
             raise RuntimeError('Please specify a language')

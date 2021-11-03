@@ -10,7 +10,7 @@
     ]
   },
   "speech": {
-    "resource": "google"
+    "resource": "azure"
   },
   "spotify": {
     "username": "dewarhun"
