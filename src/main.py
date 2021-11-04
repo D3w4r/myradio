@@ -4,6 +4,7 @@ import logging
 import google.cloud.texttospeech as tts
 import multitimer
 
+from data.enums import Constants
 from music.spotipy_client import Client
 from src.text_to_speech import azure_speech
 from text_to_speech import google_speech
@@ -12,11 +13,9 @@ from text_to_speech.text_generator import TextGenerator
 
 logging.basicConfig(level=logging.INFO)
 
-config_path = 'src/config/'
-
 
 def initialize():
-    with open(config_path + 'basic_config.json') as basic:
+    with open(Constants.CONFIG.value) as basic:
         basic_config = json.load(basic)
         if basic_config['speech']['resource'] == 'azure':
             language = basic_config['azure']['language']
@@ -25,7 +24,8 @@ def initialize():
         elif basic_config['speech']['resource'] == 'google':
             language = basic_config['google']['language']
             name = language + '-' + basic_config['google']['voice']
-            speech = google_speech.GoogleSpeech(voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
+            speech = google_speech.GoogleSpeech(
+                voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
     return speech
 
 
@@ -47,8 +47,6 @@ def main():
                                   runonstart=False)
     timer.start()
 
-
-# todo spotify playlists, weights path fix
 
 if __name__ == "__main__":
     main()
