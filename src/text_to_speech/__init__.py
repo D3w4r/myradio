@@ -7,6 +7,8 @@ from data.enums import Constants
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+config_path = 'src/config/'
+
 def play_audio(path: str):
     player = vlc.MediaPlayer()
     media = vlc.Media(Constants.CACHE_PATH.value + '/' + path)

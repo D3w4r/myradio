@@ -1,3 +1,9 @@
+import logging.config
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 categories = [
     "ARTS & CULTURE",
     "BLACK VOICES",
