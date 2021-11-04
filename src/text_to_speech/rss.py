@@ -3,7 +3,6 @@ import logging
 
 import feedparser
 
-import data.repository
 from data.enums import Constants
 from data.repository import Repository
 from dnn.model import RoBERTa

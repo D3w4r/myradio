@@ -23,5 +23,13 @@
     "by_labels": [
       "UNREAD"
     ]
+  },
+  "azure": {
+    "language": "en-GB",
+    "voice": "SoniaNeural"
+  },
+  "google": {
+    "language": "en-GB",
+    "voice": "Wavenet-B"
   }
 }

@@ -12,11 +12,11 @@ from text_to_speech import play_audio
 
 class GoogleSpeech(Speech):
 
-    def __init__(self, voice_params: tts.VoiceSelectionParams, audio_config: tts.AudioConfig):
-        super().__init__(voice_params.language_code)
+    def __init__(self, voice_params: tts.VoiceSelectionParams):
+        super().__init__()
         self.client = tts.TextToSpeechClient()
         self.voice_params = voice_params
-        self.audio_config: tts.AudioConfig = audio_config
+        self.audio_config: tts.AudioConfig = tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3)
         self.logger = logging.getLogger(__name__)
 
     def synthesize(self, text):

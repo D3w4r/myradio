@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import datetime, date
 
-from data.enums import Time
+from data.enums import Time, Constants
 from data.mail import Gmail
 from text_to_speech.rss import Feed
 from data.weather import Weather
@@ -42,7 +42,7 @@ class TextGenerator:
     def generate_greeting(self):
         self.logger.info('Generating hello message')
         current_time = get_current_time_str()
-        return ["Hi. It's " + current_time + " o'clock! Here is some information from the world! "]
+        return ["Hi. The time is " + current_time + "! "]
 
     def generate_morning_greeting(self):
         self.logger.info('Generating hello message')
@@ -62,26 +62,25 @@ class TextGenerator:
         news = self.feed.get_news_titles(howmany=self.config['news']['how_many'])
         return_data = news
         if not news:
-            return_data = ['Nothing new has happened yet.']
+            return_data = ["There are no new news from Telex, which you haven't heard yet."]
         return return_data
 
     def generate_text_email(self):
         input: list = self.gmail_app.get_emails_by_labels(how_many=5, by_labels=['UNREAD'])
         self.logger.info("Generating text from incoming emails")
-        repository = 'cache/repository.json'
-        text = [
-            "You've got mail from: "
-        ]
-        with open(repository, mode='r', encoding='utf-8') as file:
+        text = ["You've got mail from: "]
+        repository_path = Constants.MAIL_REPOSITORY.value
+        with open(repository_path, mode='r', encoding='utf-8') as file:
             persisted_emails = json.load(file)
             for item in input[:]:
                 if item in persisted_emails:
                     input.remove(item)
                 else:
                     persisted_emails.append(item)
-        with open(repository, 'w', encoding='utf-8') as file:
+        with open(repository_path, 'w', encoding='utf-8') as file:
             json.dump(persisted_emails, file, ensure_ascii=False)
         self.logger.debug(f"New messages: {input}")
+
         if len(input) == 0:
             text = ["You've got no new messages!"]
         senders = []
@@ -104,7 +103,6 @@ class TextGenerator:
             text += self.generate_text_news()
         elif part_of_day == Time.LUNCH:
             text += self.generate_greeting()
-            text += self.generate_text_weather()
             text += self.generate_text_email()
         else:
             text += self.generate_greeting()

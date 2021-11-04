@@ -1,10 +1,8 @@
 import json
 import logging
-import os
 
 import google.cloud.texttospeech as tts
 import multitimer
-from azure.cognitiveservices.speech import SpeechConfig
 
 from music.spotipy_client import Client
 from src.text_to_speech import azure_speech
@@ -20,24 +18,14 @@ config_path = 'src/config/'
 def initialize():
     with open(config_path + 'basic_config.json') as basic:
         basic_config = json.load(basic)
-    if basic_config['speech']['resource'] == 'azure':
-        with open(config_path + 'azure_config.json') as azure_config:
-            config = json.load(azure_config)
-            speech = azure_speech.AzureSpeech(
-                speechconfig=SpeechConfig(
-                    subscription=os.environ.get('AZURE_TTS_ID'),
-                    region=config['region']),
-                language=config['language'],
-                voice=config['voice'])
-    elif basic_config['speech']['resource'] == 'google':
-        with open(config_path + 'google_config.json') as google_config:
-            config = json.load(google_config)
-            voice_params = config['voice_params']
-            speech = google_speech.GoogleSpeech(
-                voice_params=tts.VoiceSelectionParams(
-                    name=voice_params['name'],
-                    language_code=voice_params['language_code']),
-                audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3))
+        if basic_config['speech']['resource'] == 'azure':
+            language = basic_config['azure']['language']
+            voice = language + '-' + basic_config['azure']['voice']
+            speech = azure_speech.AzureSpeech(language=language, voice=voice)
+        elif basic_config['speech']['resource'] == 'google':
+            language = basic_config['google']['language']
+            name = language + '-' + basic_config['google']['voice']
+            speech = google_speech.GoogleSpeech(voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
     return speech
 
 

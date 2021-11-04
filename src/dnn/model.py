@@ -26,19 +26,3 @@ class RoBERTa:
             pred_dict.update({categories[predictions[i]]: texts[i]})
             self.logger.info(f'Predicted category for idx: {i}: ' + categories[predictions[i]])
         return pred_dict
-
-
-if __name__ == "__main__":
-    neural_net = RoBERTa()
-
-    text = [
-        'Who scored the maximum goals?',
-        'Mars might have water and dragons!',
-        'CPU is over-clocked, causing it to heating too much!',
-        'I need to buy new prescriptions.',
-        'This is just government propaganda.'
-    ]
-
-    preds = neural_net.predict(text)
-
-    print(preds)

@@ -18,7 +18,7 @@ def download_city_list():
             file.write(city_list.content)
         block_size = 65536
         with gzip.open(Constants.CITY_LIST_GZ.value, 'rb') as source, \
-                open(Constants.CACHE_PATH.value + '/current.city.list.json', 'wb') as dest:
+                open(Constants.CITY_LIST.value, 'wb') as dest:
             while True:
                 block = source.read(block_size)
                 if not block:
@@ -42,7 +42,7 @@ class Weather:
         :return: the weather info in json format
         """
         logging.info('Getting weather info...')
-        with open('/src/cache/current.city.list.json', 'r', encoding='utf-8') as file:
+        with open(Constants.CITY_LIST.value, 'r', encoding='utf-8') as file:
             cities = json.load(file)
         url = "https://api.openweathermap.org/data/2.5/weather?id=%s&appid=%s&lang=%s&units=metric" % (
             self.get_city_id(cities), self.api_key, "hu")

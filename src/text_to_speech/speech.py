@@ -1,8 +1,4 @@
-import json
 import logging
-
-from data.mail import Gmail
-from data.weather import Weather
 
 
 class Speech:
@@ -10,7 +6,7 @@ class Speech:
     General class for speech synthesising.
     """
 
-    def __init__(self, language):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
 
     def synthesize(self, text):
