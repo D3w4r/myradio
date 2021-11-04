@@ -8,6 +8,7 @@ class Constants(Enum):
     CITY_LIST_GZ = CACHE_PATH + '/current.city.list.json.gz'
     CONFIG = 'src/config/basic_config.json'
     MAIL_REPOSITORY = CACHE_PATH + '/repository.json'
+    SAVED_WEIGHTS = 'src/dnn/saved-weigths.h5'
 
 
 class Time(Enum):

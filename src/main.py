@@ -4,6 +4,7 @@ import logging
 import google.cloud.texttospeech as tts
 import multitimer
 
+from data.enums import Constants
 from music.spotipy_client import Client
 from src.text_to_speech import azure_speech
 from text_to_speech import google_speech
@@ -12,11 +13,10 @@ from text_to_speech.text_generator import TextGenerator
 
 logging.basicConfig(level=logging.INFO)
 
-config_path = 'src/config/'
-
 
 def initialize():
-    with open(config_path + 'basic_config.json') as basic:
+    interval = None
+    with open(Constants.CONFIG.value) as basic:
         basic_config = json.load(basic)
         if basic_config['speech']['resource'] == 'azure':
             language = basic_config['azure']['language']
@@ -25,8 +25,10 @@ def initialize():
         elif basic_config['speech']['resource'] == 'google':
             language = basic_config['google']['language']
             name = language + '-' + basic_config['google']['voice']
-            speech = google_speech.GoogleSpeech(voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
-    return speech
+            speech = google_speech.GoogleSpeech(
+                voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
+        interval = basic_config['news']['interval']
+    return speech, interval
 
 
 def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
@@ -41,14 +43,12 @@ def main():
     client = Client('dewarhun')
     client.set_primary_device(client.active_devices(), 0)
     generator = TextGenerator()
-    speech = initialize()
+    speech, interval = initialize()
 
-    timer = multitimer.MultiTimer(interval=5.0, function=demonstrate, args=[client, generator, speech],
+    timer = multitimer.MultiTimer(interval=interval, function=demonstrate, args=[client, generator, speech],
                                   runonstart=False)
     timer.start()
 
-
-# todo spotify playlists, weights path fix
 
 if __name__ == "__main__":
     main()

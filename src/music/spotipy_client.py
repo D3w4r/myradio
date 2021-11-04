@@ -62,7 +62,8 @@ class Client:
     def restart_playback(self): # Todo playlists!!
         uri = [self.current_track['item']['uri']]
         progress_ms = self.current_track['progress_ms']
-        self.spotifyObject.start_playback(device_id=self.device, uris=uri, offset=None,
+        context = self.current_track['context']['uri']
+        self.spotifyObject.start_playback(device_id=self.device, offset={"uri": uri[0]}, context_uri=context,
                                           position_ms=progress_ms)
 
     def get_current_track(self):
@@ -83,13 +84,13 @@ class Client:
         podcast = self.spotifyObject.show_episodes(show_id=query['shows']['items'][0]['uri'])
         self.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']], progress_ms=0)
 
-        time.sleep(60)
+        time.sleep(62)
 
 
 if __name__ == "__main__":
     client = Client('dewarhun')
     client.set_primary_device(client.active_devices(), 0)
 
-    bbc_minute = client.search("BBC Minute", 1, 0, 'show')
-    episode = client.spotifyObject.show_episodes(show_id=bbc_minute['shows']['items'][0]['uri'])
-    client.start_playback(context_uri=None, uris=[episode['items'][0]['uri']])
+    client.pause_playback()
+    time.sleep(3)
+    client.restart_playback()

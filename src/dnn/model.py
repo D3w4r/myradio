@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
 
+from data.enums import Constants
 from dnn import categories
 
 
