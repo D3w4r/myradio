@@ -6,7 +6,6 @@ import google.cloud.texttospeech as tts
 import multitimer
 from azure.cognitiveservices.speech import SpeechConfig
 
-from dnn.model import RoBERTa
 from music.spotipy_client import Client
 from src.text_to_speech import azure_speech
 from text_to_speech import google_speech
@@ -59,6 +58,7 @@ def main():
     timer = multitimer.MultiTimer(interval=5.0, function=demonstrate, args=[client, generator, speech],
                                   runonstart=False)
     timer.start()
+
 
 # todo spotify playlists, weights path fix
 
