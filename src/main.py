@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def initialize():
+    interval = None
     with open(Constants.CONFIG.value) as basic:
         basic_config = json.load(basic)
         if basic_config['speech']['resource'] == 'azure':
@@ -26,7 +27,8 @@ def initialize():
             name = language + '-' + basic_config['google']['voice']
             speech = google_speech.GoogleSpeech(
                 voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
-    return speech
+        interval = basic_config['news']['interval']
+    return speech, interval
 
 
 def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
@@ -41,9 +43,9 @@ def main():
     client = Client('dewarhun')
     client.set_primary_device(client.active_devices(), 0)
     generator = TextGenerator()
-    speech = initialize()
+    speech, interval = initialize()
 
-    timer = multitimer.MultiTimer(interval=5.0, function=demonstrate, args=[client, generator, speech],
+    timer = multitimer.MultiTimer(interval=interval, function=demonstrate, args=[client, generator, speech],
                                   runonstart=False)
     timer.start()
 
