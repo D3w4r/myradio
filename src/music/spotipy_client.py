@@ -84,7 +84,7 @@ class Client:
         podcast = self.spotifyObject.show_episodes(show_id=query['shows']['items'][0]['uri'])
         self.start_playback(context_uri=None, uris=[podcast['items'][0]['uri']], progress_ms=0)
 
-        time.sleep(60)
+        time.sleep(62)
 
 
 if __name__ == "__main__":
