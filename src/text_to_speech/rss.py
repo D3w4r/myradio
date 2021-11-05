@@ -3,9 +3,9 @@ import logging
 
 import feedparser
 
-from data.enums import Constants
-from data.repository import Repository
-from dnn.model import RoBERTa
+from src.data.enums import Constants
+from src.data.repository import Repository
+from src.dnn.model import CustomDnn
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,7 +26,7 @@ class Feed:
         if url is None:
             raise RuntimeError('Invalid URL!')
         self.feed = [feedparser.parse(url)]
-        self.neural_net = RoBERTa()
+        self.neural_net = CustomDnn()
         self.repository = Repository()
 
     def get_news_titles(self, howmany: int = None):
