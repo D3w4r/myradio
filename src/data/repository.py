@@ -4,9 +4,6 @@ import pickle
 import hashlib
 import logging
 
-logging.basicConfig(level=logging.INFO)
-
-
 def hash_item(item):
     return hashlib.sha256(str(item).encode('utf-8')).hexdigest()
 

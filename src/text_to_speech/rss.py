@@ -71,6 +71,6 @@ class Feed:
 if __name__ == "__main__":
     # TESTS #
     feed = Feed(
-        'https://telex.hu/rss/archivum?filters=%7B%22flags%22%3A%5B%22english%22%5D%2C%22parentId%22%3A%5B%22null%22%5D%7D')
+        'http://rss.cnn.com/rss/edition_world.rss')
     data = feed.get_news_titles(5)
     logging.info(data)
