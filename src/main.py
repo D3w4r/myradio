@@ -41,7 +41,7 @@ def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
 
 def main():
     client = Client('dewarhun')
-    client.set_primary_device(client.active_devices(), 0)
+
     generator = TextGenerator()
     speech, interval = initialize()
 
