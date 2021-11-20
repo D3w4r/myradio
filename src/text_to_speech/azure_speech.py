@@ -5,7 +5,7 @@ import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 
-from text_to_speech.speech import Speech
+from src.text_to_speech.speech import Speech
 
 
 class AzureSpeech(Speech):

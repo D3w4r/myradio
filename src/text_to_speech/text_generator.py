@@ -2,10 +2,10 @@ import json
 import logging
 from datetime import datetime, date
 
-from data.enums import Time, Constants
-from data.mail import Gmail
-from text_to_speech.rss import Feed
-from data.weather import Weather
+from src.data.enums import Time, Constants
+from src.data.mail import Gmail
+from src.text_to_speech.rss import Feed
+from src.data.weather import Weather
 
 
 def get_current_time_str():

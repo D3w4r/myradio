@@ -59,11 +59,16 @@ class Client:
         self.spotifyObject.start_playback(device_id=self.device, context_uri=context_uri, uris=uris, offset=None,
                                           position_ms=progress_ms)
 
-    def restart_playback(self): # Todo playlists!!
+    def restart_playback(self):
         uri = [self.current_track['item']['uri']]
         progress_ms = self.current_track['progress_ms']
-        context = self.current_track['context']['uri']
-        self.spotifyObject.start_playback(device_id=self.device, offset={"uri": uri[0]}, context_uri=context,
+        context = self.current_track['context']
+        if context is None:
+            album = self.current_track['item']['album']['uri']
+            self.spotifyObject.start_playback(device_id=self.device, offset={"uri": uri[0]}, context_uri=album, position_ms=progress_ms)
+        else:
+            context = context['uri']
+            self.spotifyObject.start_playback(device_id=self.device, offset={"uri": uri[0]}, context_uri=context,
                                           position_ms=progress_ms)
 
     def get_current_track(self):
