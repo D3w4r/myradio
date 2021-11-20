@@ -43,9 +43,10 @@ because the changes will be lost.
 > If you are using PyCharm (JetBrains IDE) simply go to > `Edit Configurations..` > `Environmental variables` and set the values. \
 > If you are running the code via CLI these might not be recognized.
 
-### Secrets
+### Secrets and cache
 
 Please create a folder named secrets under ``src/``. Place the files I've sent you here.
+Please create a folder named ``src/cache``.
 
 ### Spotify
 

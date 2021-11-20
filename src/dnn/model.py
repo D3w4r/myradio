@@ -4,11 +4,10 @@ import numpy as np
 import tensorflow as tf
 from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
 
-from data.enums import Constants
-from dnn import categories
+from src.dnn import categories
 
 
-class RoBERTa:
+class CustomDnn:
 
     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained("roberta-base")

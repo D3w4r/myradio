@@ -5,9 +5,9 @@ import os.path
 import google.cloud.texttospeech as tts
 
 
-from text_to_speech.speech import Speech
-from data.enums import Constants
-from text_to_speech import play_audio
+from src.text_to_speech.speech import Speech
+from src.data.enums import Constants
+from src.text_to_speech import play_audio
 
 
 class GoogleSpeech(Speech):
