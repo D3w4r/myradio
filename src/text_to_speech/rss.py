@@ -17,9 +17,6 @@ class Feed:
     """Class for getting RSS feed from desired URL"""
 
     def __init__(self, url=None):
-        """
-        This method is specialized for www.telex.hu!
-        """
 
         logging.info('Initializing RSS feed parser...')
         self.feed = []

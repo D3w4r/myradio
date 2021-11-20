@@ -8,7 +8,7 @@
       "BUSINESS & MONEY",
       "WORLD NEWS"
     ],
-    "interval": 20.0
+    "interval_sec": 20.0
   },
   "speech": {
     "resource": "azure"

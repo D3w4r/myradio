@@ -27,7 +27,7 @@ def initialize():
             name = language + '-' + basic_config['google']['voice']
             speech = google_speech.GoogleSpeech(
                 voice_params=tts.VoiceSelectionParams(name=name, language_code=language))
-        interval = basic_config['news']['interval']
+        interval = basic_config['news']['interval_sec']
     return speech, interval
 
 
