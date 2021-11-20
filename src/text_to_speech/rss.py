@@ -7,8 +7,6 @@ from src.data.enums import Constants
 from src.data.repository import Repository
 from src.dnn.model import CustomDnn
 
-logging.basicConfig(level=logging.INFO)
-
 with open(Constants.CONFIG.value, 'r') as file:
     config = json.load(file)
 
@@ -18,20 +16,21 @@ class Feed:
 
     def __init__(self, url=None):
 
-        logging.info('Initializing RSS feed parser...')
         self.feed = []
         if url is None:
             raise RuntimeError('Invalid URL!')
         self.feed = [feedparser.parse(url)]
         self.neural_net = CustomDnn()
         self.repository = Repository()
+        self.logger = logging.getLogger(__name__)
+        logging.info('Initializing RSS feed parser...')
 
     def get_news_titles(self, howmany: int = None):
         """
         :param howmany: how many you want to get
         :return: titles of feed entries
         """
-        logging.debug('Getting entries from RSS feed...')
+        self.logger.debug('Getting entries from RSS feed...')
 
         input_news = []
 
@@ -42,9 +41,9 @@ class Feed:
         for item in self.feed:
             for i in item['entries'][:howmany]:
                 if i['title'][-1] is not ('?' or '!' or '.'):
-                    input_news.append(i['title'] + '. ' + i['description'])
+                    input_news.append(i['title'] + '. ' + i['summary'])
                 else:
-                    input_news.append(i['title'] + ' ' + i['description'])
+                    input_news.append(i['title'] + ' ' + i['summary'])
 
         if input_news:
             predictions = self.neural_net.predict(input_news)
@@ -52,25 +51,19 @@ class Feed:
             for category in predictions:
                 if category in config['news']['interests']:
                     return_data.append(predictions[category])
-                    logging.info('Found matching category: ' + category)
+                    self.logger.debug('Found matching category: ' + category)
             input_news = return_data
 
         input_news = self.repository.persist_and_filter_list(input_list=input_news,
                                                              path=Constants.RSS_REPOSITORY.value)
+
+        self.logger.debug(input_news)
         return input_news
 
     def source(self):
         """
         :return: the source of the rss feed
         """
-        logging.info('Getting RSS sources')
+        self.logger.info('Getting RSS sources')
         href = self.feed[0]['href']
         return href.split('/')[2]
-
-
-if __name__ == "__main__":
-    # TESTS #
-    feed = Feed(
-        'http://rss.cnn.com/rss/edition_world.rss')
-    data = feed.get_news_titles(5)
-    logging.info(data)

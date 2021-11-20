@@ -25,13 +25,13 @@ class AzureSpeech(Speech):
         self.setup = True
 
     def synthesize(self, input_text):
-        logging.info('Synthesising speech...')
+        self.logger.info('Synthesising speech...')
         for item in input_text:
             result = self.speech_synthesizer.speak_text(item)
             if result.reason == speechsdk.ResultReason.Canceled:
                 cancellation_details = result.cancellation_details
-                logging.error(f"Speech synthesis canceled: {cancellation_details.reason}")
+                self.logger.error(f"Speech synthesis canceled: {cancellation_details.reason}")
                 if cancellation_details.reason == speechsdk.CancellationReason.Error:
                     if cancellation_details.error_details:
-                        logging.error(f"Error details: {cancellation_details.error_details}")
+                        self.logger.error(f"Error details: {cancellation_details.error_details}")
                 break
