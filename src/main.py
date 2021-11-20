@@ -4,12 +4,12 @@ import logging
 import google.cloud.texttospeech as tts
 import multitimer
 
-from data.enums import Constants
-from music.spotipy_client import Client
+from src.data.enums import Constants
+from src.music.spotipy_client import Client
 from src.text_to_speech import azure_speech
-from text_to_speech import google_speech
-from text_to_speech.speech import Speech
-from text_to_speech.text_generator import TextGenerator
+from src.text_to_speech import google_speech
+from src.text_to_speech.speech import Speech
+from src.text_to_speech.text_generator import TextGenerator
 
 logging.basicConfig(level=logging.INFO)
 

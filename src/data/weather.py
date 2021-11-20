@@ -4,7 +4,7 @@ import logging
 import requests
 import gzip
 
-from data.enums import Constants
+from src.data.enums import Constants
 
 logging.basicConfig(level=logging.INFO)
 

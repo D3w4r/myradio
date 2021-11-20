@@ -2,7 +2,7 @@ import logging.config
 import vlc
 import time
 
-from data.enums import Constants
+from src.data.enums import Constants
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
