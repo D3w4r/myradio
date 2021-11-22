@@ -1,5 +1,4 @@
 import datetime
-import logging
 import os
 import pickle
 from pprint import pprint
@@ -9,10 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 from src.data.enums import Constants
-
 from src.data.repository import Repository
-
-logging.basicConfig(level=logging.INFO)
 
 
 class Gmail:

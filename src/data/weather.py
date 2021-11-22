@@ -6,8 +6,6 @@ import gzip
 
 from src.data.enums import Constants
 
-logging.basicConfig(level=logging.INFO)
-
 
 def download_city_list():
     url = "https://bulk.openweathermap.org/sample/current.city.list.json.gz"

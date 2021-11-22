@@ -1,10 +1,9 @@
 import logging
+import sys
 import time
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-
-logging.basicConfig(level=logging.WARNING)
 
 
 class Client:
@@ -17,7 +16,16 @@ class Client:
                  scope='user-read-private user-read-playback-state user-modify-playback-state'
                  ):
         self.username = username
-        self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        self.logger = logging.getLogger(__name__)
+        try:
+            self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+            self.set_primary_device(self.active_devices(), 0)
+        except IndexError as err:
+            self.logger.error(f'Failed to instantiate SpotifyObject, reason: {err}', exc_info=True)
+            raise Exception('PLEASE START THE SPOTIFY APPLICATION')
+        except BaseException as base_err:
+            self.logger.error(f'Unexpected error {base_err}', exc_info=True)
+            raise
         self.current_track = self.get_current_track()
 
     def active_devices(self):

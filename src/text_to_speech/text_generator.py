@@ -62,7 +62,7 @@ class TextGenerator:
         news = self.feed.get_news_titles(howmany=self.config['news']['how_many'])
         return_data = news
         if not news:
-            return_data = ["There are no new news from Telex, which you haven't heard yet."]
+            return_data = ["There are no new news which you haven't heard yet."]
         return return_data
 
     def generate_text_email(self):

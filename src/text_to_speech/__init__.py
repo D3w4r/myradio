@@ -1,11 +1,8 @@
-import logging.config
-import vlc
 import time
 
-from src.data.enums import Constants
+import vlc
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from src.data.enums import Constants
 
 config_path = 'src/config/'
 
