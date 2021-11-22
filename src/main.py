@@ -4,7 +4,6 @@ import sys
 
 import google.cloud.texttospeech as tts
 import multitimer
-
 from pynput import keyboard
 
 from src.data.enums import Constants
