@@ -1,9 +1,11 @@
 import json
+import logging
 import sys
 
 import google.cloud.texttospeech as tts
-import keyboard
 import multitimer
+
+from pynput import keyboard
 
 from src.data.enums import Constants
 from src.music.spotipy_client import Client
@@ -34,7 +36,21 @@ def initialize_speech():
     return speech
 
 
+client = Client('dewarhun')
+generator = TextGenerator()
+speech = initialize_speech()
+
+
+def on_press(key):
+    try:
+        demonstrate(client, generator, speech)
+        logging.info(f'Test key {key} pressed!')
+    except AttributeError:
+        logging.error(f'Special key {key} pressed')
+
+
 def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
+    logging.info('Demonstrate method called')
     text = generator.generate_feed()
     spotify.pause_playback()
     speech.synthesize(text)
@@ -43,15 +59,18 @@ def demonstrate(spotify: Client, generator: TextGenerator, speech: Speech):
 
 
 def main():
-    client = Client('dewarhun')
-
-    generator = TextGenerator()
-    speech = initialize_speech()
     interval = get_interval()
+
+    listener = keyboard.Listener(
+        on_press=on_press
+    )
 
     timer = multitimer.MultiTimer(interval=interval, function=demonstrate, args=[client, generator, speech],
                                   runonstart=False)
     timer.start()
+    logging.info(f'Started countdown from {interval}')
+    listener.start()
+    logging.info(f'Started keyboard listener')
 
 
 if __name__ == "__main__":
