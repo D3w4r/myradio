@@ -13,7 +13,7 @@ class CustomDnn:
     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained("roberta-base")
         self.trained_model = TFAutoModelForSequenceClassification.from_pretrained("roberta-base", num_labels=28)
-        self.trained_model.load_weights(os.getcwd() + 'dnn/saved-weights.h5')
+        self.trained_model.load_weights(os.getcwd() + '/dnn/saved-weights.h5')
         self.logger = logging.getLogger(__name__)
 
     def predict(self, texts: list):
