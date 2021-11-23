@@ -139,5 +139,5 @@ dmypy.json
 /src/data/repository.json
 >>>>>>> dev
 /src/%SystemDrive%/
-/saved-weights.h5
-/saved-weights.h5
+/src/dnn/saved-weights.h5
+/src/dnn/saved-weights.h5
